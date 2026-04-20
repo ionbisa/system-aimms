@@ -1,0 +1,912 @@
+/* ===============================
+RESET (LOGIN ONLY)
+================================= */
+
+html, body {
+    overflow: auto !important;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===============================
+GLOBAL PAGE LOADER
+================================= */
+
+.page-loader {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background:
+        radial-gradient(circle at top, rgba(13, 110, 253, 0.15), transparent 45%),
+        rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.12s ease, visibility 0.12s ease;
+    z-index: 2000;
+}
+
+.page-loading .page-loader,
+.page-loader.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.page-loader__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.page-loader__spinner {
+    width: 5rem;
+    height: 5rem;
+}
+
+.page-loader__ring {
+    animation: ringA 2s linear infinite;
+}
+
+.page-loader__ring--a {
+    stroke: #f42f25;
+}
+
+.page-loader__ring--b {
+    animation-name: ringB;
+    stroke: #ffdd00;
+}
+
+.page-loader__ring--c {
+    animation-name: ringC;
+    stroke: #255ff4;
+}
+
+.page-loader__ring--d {
+    animation-name: ringD;
+    stroke: #2cf425;
+}
+
+.page-loader__label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0d6efd;
+}
+
+/* =====================================================
+PATCH AMAN – FIX DASHBOARD MOBILE TANPA MERUBAH LAYOUT
+===================================================== */
+
+/* Pastikan main bisa scroll */
+main {
+    overflow-y: auto !important;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Jangan paksa row jadi nowrap (ini penyebab kepotong) */
+.container-fluid > .row {
+    flex-wrap: wrap !important;
+}
+
+/* Pastikan chart selalu terlihat */
+.chart-container {
+    overflow: visible !important;
+}
+
+/* ===============================
+HEADER
+================================= */
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #0d6efd;
+    color: #fff;
+    z-index: 1050;
+}
+
+/* ===============================
+FOOTER
+================================= */
+
+.footer {
+    position: sticky;
+    bottom: 0;
+    height: 40px;
+    background: #f8f9fa;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    line-height: 40px;
+    z-index: 1040;
+}
+
+/* ===============================
+AIMMS LOGIN LAYOUT
+================================= */
+
+.aimms-login {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    font-family: "Segoe UI", sans-serif;
+    overflow: hidden;
+}
+
+/* ===============================
+LEFT PANEL
+================================= */
+
+.login-left {
+    flex: 1.3;
+    display: flex;
+    align-items: center;
+    padding: 4rem;
+    color: #fff;
+    background:
+        linear-gradient(
+            rgba(13,110,253,0.75),
+            rgba(255,193,7,0.55)
+        ),
+        url('/assets/img/login-bg.jpg') center center / cover no-repeat;
+    animation: fadeSlideLeft 1s ease;
+}
+
+.left-content {
+    max-width: 520px;
+}
+
+.welcome-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.welcome-title span {
+    color: #ffc107;
+}
+
+.welcome-desc {
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+.feature-list li {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+/* ===============================
+RIGHT PANEL
+================================= */
+
+.login-right {
+    flex: 0.7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    animation: fadeSlideRight 1s ease;
+}
+
+/* ===============================
+LOGIN CARD
+================================= */
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* ===============================
+ANIMATION
+================================= */
+
+@keyframes fadeSlideLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeSlideRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes ringA {
+    from,
+    4% {
+        stroke-dasharray: 0 660;
+        stroke-width: 20;
+        stroke-dashoffset: -330;
+    }
+
+    12% {
+        stroke-dasharray: 60 600;
+        stroke-width: 30;
+        stroke-dashoffset: -335;
+    }
+
+    32% {
+        stroke-dasharray: 60 600;
+        stroke-width: 30;
+        stroke-dashoffset: -595;
+    }
+
+    40%,
+    54% {
+        stroke-dasharray: 0 660;
+        stroke-width: 20;
+        stroke-dashoffset: -660;
+    }
+
+    62% {
+        stroke-dasharray: 60 600;
+        stroke-width: 30;
+        stroke-dashoffset: -665;
+    }
+
+    82% {
+        stroke-dasharray: 60 600;
+        stroke-width: 30;
+        stroke-dashoffset: -925;
+    }
+
+    90%,
+    to {
+        stroke-dasharray: 0 660;
+        stroke-width: 20;
+        stroke-dashoffset: -990;
+    }
+}
+
+@keyframes ringB {
+    from,
+    12% {
+        stroke-dasharray: 0 220;
+        stroke-width: 20;
+        stroke-dashoffset: -110;
+    }
+
+    20% {
+        stroke-dasharray: 20 200;
+        stroke-width: 30;
+        stroke-dashoffset: -115;
+    }
+
+    40% {
+        stroke-dasharray: 20 200;
+        stroke-width: 30;
+        stroke-dashoffset: -195;
+    }
+
+    48%,
+    62% {
+        stroke-dasharray: 0 220;
+        stroke-width: 20;
+        stroke-dashoffset: -220;
+    }
+
+    70% {
+        stroke-dasharray: 20 200;
+        stroke-width: 30;
+        stroke-dashoffset: -225;
+    }
+
+    90% {
+        stroke-dasharray: 20 200;
+        stroke-width: 30;
+        stroke-dashoffset: -305;
+    }
+
+    98%,
+    to {
+        stroke-dasharray: 0 220;
+        stroke-width: 20;
+        stroke-dashoffset: -330;
+    }
+}
+
+@keyframes ringC {
+    from {
+        stroke-dasharray: 0 440;
+        stroke-width: 20;
+        stroke-dashoffset: 0;
+    }
+
+    8% {
+        stroke-dasharray: 40 400;
+        stroke-width: 30;
+        stroke-dashoffset: -5;
+    }
+
+    28% {
+        stroke-dasharray: 40 400;
+        stroke-width: 30;
+        stroke-dashoffset: -175;
+    }
+
+    36%,
+    58% {
+        stroke-dasharray: 0 440;
+        stroke-width: 20;
+        stroke-dashoffset: -220;
+    }
+
+    66% {
+        stroke-dasharray: 40 400;
+        stroke-width: 30;
+        stroke-dashoffset: -225;
+    }
+
+    86% {
+        stroke-dasharray: 40 400;
+        stroke-width: 30;
+        stroke-dashoffset: -395;
+    }
+
+    94%,
+    to {
+        stroke-dasharray: 0 440;
+        stroke-width: 20;
+        stroke-dashoffset: -440;
+    }
+}
+
+@keyframes ringD {
+    from,
+    8% {
+        stroke-dasharray: 0 440;
+        stroke-width: 20;
+        stroke-dashoffset: 0;
+    }
+
+    16% {
+        stroke-dasharray: 40 400;
+        stroke-width: 30;
+        stroke-dashoffset: -5;
+    }
+
+    36% {
+        stroke-dasharray: 40 400;
+        stroke-width: 30;
+        stroke-dashoffset: -175;
+    }
+
+    44%,
+    50% {
+        stroke-dasharray: 0 440;
+        stroke-width: 20;
+        stroke-dashoffset: -220;
+    }
+
+    58% {
+        stroke-dasharray: 40 400;
+        stroke-width: 30;
+        stroke-dashoffset: -225;
+    }
+
+    78% {
+        stroke-dasharray: 40 400;
+        stroke-width: 30;
+        stroke-dashoffset: -395;
+    }
+
+    86%,
+    to {
+        stroke-dasharray: 0 440;
+        stroke-width: 20;
+        stroke-dashoffset: -440;
+    }
+}
+
+/* ===============================
+RESPONSIVE LOGIN
+================================= */
+
+@media (max-width: 792px) {
+    .aimms-login {
+        flex-direction: column;
+    }
+
+    .login-left {
+        min-height: 40vh;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .welcome-title {
+        font-size: 2.2rem;
+    }
+}
+
+/* ===============================
+LAYOUT DASHBOARD
+================================= */
+
+/* Content tidak ketiban sidebar */
+@media (min-width: 768px) {
+    main {
+        margin-left: 260px;
+    }
+}
+
+/* Mobile: sidebar collapse */
+@media (max-width: 767px) {
+    main {
+        margin-left: 0;
+    }
+}
+
+/* ===============================
+SIDEBAR
+================================= */
+
+.sidebar {
+    width: 250px;
+    background-color: #0d6efd;
+    color: #fff;
+    min-height: 100vh;
+    overflow-y: auto;
+    flex-wrap: nowrap;
+}
+
+.sidebar {
+    width: 260px !important;
+    min-height: 100vh;
+}
+
+.col-md-3.sidebar,
+.col-lg-2.sidebar {
+    flex: 0 0 260px;
+    max-width: 260px;
+}
+
+.sidebar .nav-link {
+    color: #ffffff;
+    font-weight: 500;
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 10px 16px;
+}
+
+.sidebar .nav-link i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border-radius: 8px;
+}
+
+/* ===============================
+CONTENT
+================================= */
+
+.content-wrapper {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f4f6f9;
+}
+
+/* ===============================
+DASHBOARD
+================================= */
+
+.dashboard-wrapper {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* KPI CARD */
+.kpi-card {
+    width: 100%;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.kpi-card {
+    min-height: 12px;
+    display: flex;
+    align-items: center;
+}
+
+/* CHART */
+.dashboard-chart {
+    max-height: 260px;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 240px;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ===============================
+RESPONSIVE DASHBOARD
+================================= */
+
+@media (max-width: 992px) {
+    .dashboard-chart-card {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .kpi-card h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Wrapper row pakai flex */
+.container-fluid > .row {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+/* ===============================
+MOBILE SIDEBAR
+================================= */
+
+@media (max-width: 767px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        height: calc(100vh - 60px);
+        z-index: 1030%;
+    }
+
+    main {
+        margin-left: 260px;
+    }
+}
+
+/* ===============================
+APP SHELL
+================================= */
+
+:root {
+    --app-header-height: 64px;
+    --app-footer-height: 50px;
+    --app-sidebar-width: 280px;
+    --app-surface: #ffffff;
+    --app-bg: #eef3f9;
+    --app-border: #d8e1ee;
+    --app-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+body.app-shell {
+    min-height: 100vh;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top right, rgba(255, 193, 7, 0.16), transparent 24%),
+        linear-gradient(180deg, #f8fbff 0%, #edf3f8 100%);
+}
+
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1080;
+    min-height: var(--app-header-height);
+    background: linear-gradient(135deg, #0b5ed7 0%, #0d6efd 55%, #3a8bff 100%);
+    box-shadow: 0 10px 30px rgba(13, 110, 253, 0.28);
+}
+
+.app-header .container-fluid {
+    min-height: var(--app-header-height);
+}
+
+.app-header .navbar-brand {
+    font-size: 1rem;
+}
+
+.app-header .nav-link {
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.app-header .nav-link:hover {
+    color: #fff3cd;
+}
+
+.app-header .notification-bell-alert {
+    animation: notificationBellPulse 1.4s ease-in-out 3;
+    transform-origin: top center;
+}
+
+.app-header .notification-badge-alert {
+    animation: notificationBadgePop 1.1s ease-in-out 3;
+}
+
+@keyframes notificationBellPulse {
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+        color: rgba(255, 243, 205, 0.96);
+    }
+    20% {
+        transform: rotate(-12deg) scale(1.08);
+        color: #ffd861;
+    }
+    40% {
+        transform: rotate(10deg) scale(1.12);
+        color: #fff3cd;
+    }
+    60% {
+        transform: rotate(-8deg) scale(1.08);
+    }
+    80% {
+        transform: rotate(6deg) scale(1.04);
+    }
+}
+
+@keyframes notificationBadgePop {
+    0%, 100% {
+        transform: translate(-50%, 0) scale(1);
+        box-shadow: 0 0 0 rgba(220, 53, 69, 0);
+    }
+    35% {
+        transform: translate(-50%, 0) scale(1.18);
+        box-shadow: 0 0 0 8px rgba(220, 53, 69, 0.14);
+    }
+    65% {
+        transform: translate(-50%, 0) scale(1.08);
+    }
+}
+
+.app-body {
+    display: flex;
+    padding-top: var(--app-header-height);
+    min-height: calc(100vh - var(--app-footer-height));
+}
+
+.app-sidebar {
+    background: linear-gradient(180deg, #0b5ed7 0%, #0a58ca 100%);
+    color: #fff;
+}
+
+.app-sidebar .offcanvas-body,
+.app-sidebar .offcanvas-header {
+    background: inherit;
+    color: inherit;
+}
+
+.sidebar-inner {
+    height: 100%;
+    overflow-y: auto;
+    padding-bottom: 1rem;
+}
+
+.app-main {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    height: calc(100vh - var(--app-header-height) - var(--app-footer-height));
+    margin-top: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.app-content {
+    min-height: 100%;
+    padding: 1.25rem 1.25rem calc(var(--app-footer-height) + 1.5rem);
+}
+
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1080;
+    height: var(--app-footer-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+    background: linear-gradient(135deg, #0a58ca 0%, #0d6efd 100%);
+    box-shadow: 0 -10px 28px rgba(13, 110, 253, 0.2);
+}
+
+.app-content .container,
+.app-content .container-fluid {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.app-content .card,
+.app-content .table-responsive {
+    border: 1px solid rgba(216, 225, 238, 0.9);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--app-shadow);
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+.app-content .card {
+    overflow: visible;
+}
+
+.app-content .card-body {
+    padding: 1.25rem;
+}
+
+.app-content .table {
+    margin-bottom: 0;
+    min-width: 720px;
+}
+
+.app-content .table thead th {
+    border-bottom-width: 1px;
+    background: #edf4ff;
+    color: #20406a;
+    font-size: 0.92rem;
+    white-space: nowrap;
+}
+
+.app-content .table td,
+.app-content .table th {
+    padding: 0.9rem 0.85rem;
+    vertical-align: middle;
+}
+
+.app-content .btn,
+.app-content .form-control,
+.app-content .form-select {
+    min-height: 44px;
+    border-radius: 12px;
+}
+
+.app-content .btn-sm {
+    min-height: auto;
+}
+
+.app-content .alert {
+    border-radius: 14px;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+}
+
+.sidebar-inner .nav-link {
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 500;
+    white-space: normal;
+    font-size: 0.95rem;
+    padding: 0.8rem 0.95rem;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-inner .nav-link i {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+.sidebar-inner .nav-link.active,
+.sidebar-inner .nav-link:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffd861;
+}
+
+.sidebar-inner .collapse .nav-link {
+    font-size: 0.9rem;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+}
+
+@media (min-width: 768px) {
+    .app-sidebar {
+        position: fixed;
+        top: var(--app-header-height);
+        bottom: var(--app-footer-height);
+        left: 0;
+        width: var(--app-sidebar-width);
+        visibility: visible !important;
+        transform: none !important;
+    }
+
+    .app-main {
+        margin-left: var(--app-sidebar-width);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .app-header .navbar-collapse {
+        background: rgba(9, 57, 130, 0.96);
+        margin-top: 0.85rem;
+        padding: 1rem;
+        border-radius: 16px;
+    }
+
+    .app-header .navbar-nav {
+        align-items: flex-start !important;
+        gap: 0.65rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    :root {
+        --app-header-height: 60px;
+        --app-footer-height: 56px;
+    }
+
+    body.app-shell {
+        overflow: auto;
+    }
+
+    .app-sidebar {
+        width: min(85vw, 320px);
+        top: 0;
+        bottom: 0;
+    }
+
+    .app-main {
+        height: calc(100vh - var(--app-header-height) - var(--app-footer-height));
+        margin-left: 0;
+    }
+
+    .app-content {
+        padding: 1rem 0.85rem calc(var(--app-footer-height) + 1rem);
+    }
+
+    .app-content .card-body {
+        padding: 1rem;
+    }
+
+    .app-content .table {
+        min-width: 640px;
+    }
+
+    .brand-text .text-warning {
+        display: none;
+    }
+}
