@@ -33,20 +33,39 @@ class AssetController extends Controller
         $selectedFilter = $filters[$selectedCategory] ?? null;
         $search = trim((string) $request->query('search'));
 
-        $assets = Asset::query()
+        $assetQuery = Asset::query()
             ->when($selectedFilter, function ($query) use ($selectedFilter) {
                 $query->whereIn('type', $selectedFilter['types']);
             })
             ->when($search !== '', function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
-            })
+            });
+
+        $assets = (clone $assetQuery)
             ->orderByDesc('id')
             ->simplePaginate(10)
             ->withQueryString();
 
         $pageTitle = $selectedFilter['label'] ?? 'Asset Management';
 
-        return view('assets.index', compact('assets', 'pageTitle', 'selectedCategory', 'search'));
+        $assetSummaryMap = collect();
+
+        if ($selectedCategory === 'company') {
+            $assetSummaryMap = Asset::buildGroupedSummaries(
+                (clone $assetQuery)
+                    ->orderBy('name')
+                    ->orderBy('location')
+                    ->get()
+            )->keyBy('summary_key');
+        }
+
+        return view('assets.index', compact(
+            'assets',
+            'assetSummaryMap',
+            'pageTitle',
+            'selectedCategory',
+            'search'
+        ));
     }
 
     public function create()
@@ -56,17 +75,7 @@ class AssetController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'asset_code' => 'required|string|max:255|unique:assets,asset_code',
-            'name' => 'required|string|max:255',
-            'location' => 'nullable|string|max:255',
-            'specification' => 'nullable|string',
-            'nopol' => 'nullable|string|max:255',
-            'type' => 'required|in:Delivery Cars,Personal Cars,Motorcycles,Office Assets',
-            'status' => 'required|in:active,maintenance,disposed',
-            'pic' => 'nullable|string|max:255',
-            'photo' => 'nullable|image|max:2048',
-        ]);
+        $validated = $this->validateAsset($request);
 
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request->file('photo')->store('assets', 'public');
@@ -85,17 +94,7 @@ class AssetController extends Controller
 
     public function update(Request $request, Asset $asset)
     {
-        $validated = $request->validate([
-            'asset_code' => 'required|string|max:255|unique:assets,asset_code,' . $asset->id,
-            'name' => 'required|string|max:255',
-            'location' => 'nullable|string|max:255',
-            'specification' => 'nullable|string',
-            'nopol' => 'nullable|string|max:255',
-            'type' => 'required|in:Delivery Cars,Personal Cars,Motorcycles,Office Assets',
-            'status' => 'required|in:active,maintenance,disposed',
-            'pic' => 'nullable|string|max:255',
-            'photo' => 'nullable|image|max:2048',
-        ]);
+        $validated = $this->validateAsset($request, $asset);
 
         if ($request->hasFile('photo')) {
 
@@ -123,4 +122,28 @@ class AssetController extends Controller
         return redirect()->route('assets.index')
             ->with('success', 'Asset berhasil dihapus');
     }
+
+    protected function validateAsset(Request $request, ?Asset $asset = null): array
+    {
+        $assetCodeRule = 'required|string|max:255|unique:assets,asset_code';
+
+        if ($asset) {
+            $assetCodeRule .= ',' . $asset->id;
+        }
+
+        return $request->validate([
+            'asset_code' => $assetCodeRule,
+            'name' => 'required|string|max:255',
+            'location' => 'nullable|string|max:255',
+            'specification' => 'nullable|string|max:' . Asset::SPECIFICATION_MAX_LENGTH,
+            'nopol' => 'nullable|string|max:255',
+            'type' => 'required|in:Delivery Cars,Personal Cars,Motorcycles,Office Assets',
+            'status' => 'required|in:active,maintenance,disposed',
+            'pic' => 'nullable|string|max:255',
+            'photo' => 'nullable|image|max:2048',
+        ], [
+            'specification.max' => 'Spesifikasi maksimal ' . Asset::SPECIFICATION_MAX_LENGTH . ' karakter.',
+        ]);
+    }
+
 }

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@php($specificationMaxLength = \App\Models\Asset::SPECIFICATION_MAX_LENGTH)
+
 @section('content')
 <div class="container">
     <h4>Edit Asset</h4>
@@ -54,7 +56,21 @@
 
         <div class="col-12">
             <label class="form-label">Spesifikasi</label>
-            <textarea name="specification" class="form-control" rows="4">{{ old('specification', $asset->specification) }}</textarea>
+            <textarea
+                id="specification"
+                name="specification"
+                class="form-control @error('specification') is-invalid @enderror"
+                rows="5"
+                maxlength="{{ $specificationMaxLength }}"
+                placeholder="Masukkan spesifikasi barang secara ringkas dan jelas"
+            >{{ old('specification', $asset->specification) }}</textarea>
+            <div class="d-flex justify-content-between mt-1">
+                <small class="text-muted">Maksimal {{ $specificationMaxLength }} karakter.</small>
+                <small class="text-muted" id="specificationCounter">0/{{ $specificationMaxLength }} karakter</small>
+            </div>
+            @error('specification')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="col-12">
@@ -73,5 +89,23 @@
             <a href="{{ route('assets.index') }}" class="btn btn-secondary">Kembali</a>
         </div>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const textarea = document.getElementById('specification');
+            const counter = document.getElementById('specificationCounter');
+
+            if (!textarea || !counter) {
+                return;
+            }
+
+            const updateCounter = () => {
+                counter.textContent = `${textarea.value.length}/${textarea.maxLength} karakter`;
+            };
+
+            textarea.addEventListener('input', updateCounter);
+            updateCounter();
+        });
+    </script>
 </div>
 @endsection
