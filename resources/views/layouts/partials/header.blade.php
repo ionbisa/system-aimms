@@ -1,3 +1,13 @@
+@php
+    /** @var \App\Models\User|null $authUser */
+    $authUser = \Illuminate\Support\Facades\Auth::user();
+    $authUserId = \Illuminate\Support\Facades\Auth::id();
+    $authUserName = $authUser?->getAttribute('name') ?? 'User';
+    $authUserEmail = $authUser?->getAttribute('email') ?? '-';
+    $authUserProfilePhotoUrl = $authUser?->getProfilePhotoUrlAttribute();
+    $authUserRoleNames = $authUser?->getRoleNames()->implode(', ') ?: 'Belum ada role';
+@endphp
+
 <nav class="app-header navbar navbar-expand-lg navbar-dark px-3 px-lg-4">
     <div class="container-fluid">
         <div class="d-flex align-items-center gap-2">
@@ -101,10 +111,10 @@
                        role="button"
                        data-bs-toggle="dropdown"
                        aria-expanded="false">
-                        @if(auth()->user()->profile_photo_url)
+                        @if($authUserProfilePhotoUrl)
                         <img
-                            src="{{ auth()->user()->profile_photo_url }}"
-                            alt="{{ auth()->user()->name }}"
+                            src="{{ $authUserProfilePhotoUrl }}"
+                            alt="{{ $authUserName }}"
                             class="rounded-circle border border-warning"
                             width="34"
                             height="34"
@@ -116,15 +126,15 @@
                             <i class="bi bi-person-fill"></i>
                         </span>
                         @endif
-                        <span>{{ auth()->user()->name }}</span>
+                        <span>{{ $authUserName }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end shadow border-0 p-0 overflow-hidden" style="min-width: 280px;">
                         <div class="px-3 py-3 bg-light border-bottom">
                             <div class="d-flex align-items-center gap-3">
-                                @if(auth()->user()->profile_photo_url)
+                                @if($authUserProfilePhotoUrl)
                                 <img
-                                    src="{{ auth()->user()->profile_photo_url }}"
-                                    alt="{{ auth()->user()->name }}"
+                                    src="{{ $authUserProfilePhotoUrl }}"
+                                    alt="{{ $authUserName }}"
                                     class="rounded-circle border"
                                     width="52"
                                     height="52"
@@ -137,10 +147,10 @@
                                 </span>
                                 @endif
                                 <div>
-                                    <div class="fw-bold text-dark">{{ auth()->user()->name }}</div>
-                                    <div class="small text-muted">{{ auth()->user()->email }}</div>
+                                    <div class="fw-bold text-dark">{{ $authUserName }}</div>
+                                    <div class="small text-muted">{{ $authUserEmail }}</div>
                                     <div class="small text-primary fw-semibold">
-                                        {{ auth()->user()->roles->pluck('name')->implode(', ') ?: 'Belum ada role' }}
+                                        {{ $authUserRoleNames }}
                                     </div>
                                 </div>
                             </div>
@@ -177,7 +187,7 @@
         const summary = document.getElementById('headerNotificationSummary');
         const bellIcon = document.getElementById('headerNotificationBellIcon');
         const notificationCount = Number(@json($headerNotificationCount ?? 0));
-        const notificationStorageKey = 'aimms_header_notification_count_' + @json((string) (auth()->id() ?? 'guest'));
+        const notificationStorageKey = 'aimms_header_notification_count_' + @json((string) ($authUserId ?? 'guest'));
 
         if (!dropdown || !summary || !bellIcon) {
             return;

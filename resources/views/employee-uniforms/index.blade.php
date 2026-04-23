@@ -1,9 +1,13 @@
 @extends('layouts.app')
 
+@php
+    /** @var \App\Models\User|null $authUser */
+    $authUser = \Illuminate\Support\Facades\Auth::user();
+    $tableColumnCount = $authUser?->hasAnyRole(['Master Admin', 'Admin GA']) ? 14 : 13;
+@endphp
+
 @section('content')
 <div class="container">
-    @php($tableColumnCount = auth()->user()?->hasAnyRole(['Master Admin', 'Admin GA']) ? 14 : 13)
-
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h4 class="mb-0">APD Seragam Produksi</h4>

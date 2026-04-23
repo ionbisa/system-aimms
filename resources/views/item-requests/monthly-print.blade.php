@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
+@php
+    /** @var \App\Models\User|null $authUser */
+    $authUser = \Illuminate\Support\Facades\Auth::user();
+    $printedBy = $authUser?->getAttribute('name') ?? 'User';
+@endphp
 <head>
     <meta charset="UTF-8">
     <title>Laporan Bulanan Permintaan Barang - {{ $selectedMonth->format('Y-m') }}</title>
@@ -63,7 +68,7 @@
         <strong>Filter Status:</strong> {{ $status !== '' ? ucfirst($status) : 'Semua Status' }}<br>
         <strong>Pencarian:</strong> {{ $search !== '' ? $search : '-' }}<br>
         <strong>Tanggal Cetak:</strong> {{ now()->format('d-m-Y H:i') }}<br>
-        <strong>Dicetak Oleh:</strong> {{ auth()->user()->name ?? 'User' }}
+        <strong>Dicetak Oleh:</strong> {{ $printedBy }}
     </div>
 
     <table>

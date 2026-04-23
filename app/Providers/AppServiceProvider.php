@@ -8,7 +8,9 @@ use App\Models\ItemRequestNote;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderApproval;
 use App\Models\PurchaseOrderNote;
+use App\Models\User;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -33,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
             $realizationNotifications = collect();
             $noteNotifications = collect();
 
-            if (! auth()->check() || ! Schema::hasTable('item_requests') || ! Schema::hasTable('item_request_approvals')) {
+            if (! Auth::check() || ! Schema::hasTable('item_requests') || ! Schema::hasTable('item_request_approvals')) {
                 $view->with('headerNotifications', collect());
                 $view->with('headerNotificationGroups', collect());
                 $view->with('headerNotificationCount', 0);
@@ -41,7 +43,8 @@ class AppServiceProvider extends ServiceProvider
                 return;
             }
 
-            $user = auth()->user();
+            /** @var User $user */
+            $user = Auth::user();
 
             if ($user->hasAnyRole(['Kepala Produksi', 'Master Admin'])) {
                 $productionHeadNotifications = ItemRequestApproval::query()

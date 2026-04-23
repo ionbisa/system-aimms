@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
+@php
+    /** @var \App\Models\User|null $authUser */
+    $authUser = \Illuminate\Support\Facades\Auth::user();
+    $printedBy = $authUser?->getAttribute('name') ?? 'User';
+@endphp
 <head>
     <meta charset="UTF-8">
     <title>{{ $title }}</title>
@@ -120,7 +125,7 @@
             <strong>Periode:</strong> {{ \Carbon\Carbon::parse($filters['start_date'])->format('d-m-Y') }} s/d {{ \Carbon\Carbon::parse($filters['end_date'])->format('d-m-Y') }}<br>
             <strong>Divisi:</strong> {{ ($filters['division'] ?? '') !== '' ? $filters['division'] : 'Semua Divisi' }}<br>
             <strong>Tanggal Cetak:</strong> {{ now()->format('d-m-Y H:i') }}<br>
-            <strong>Dicetak Oleh:</strong> {{ auth()->user()->name ?? 'User' }}
+            <strong>Dicetak Oleh:</strong> {{ $printedBy }}
         </div>
 
         <table>
