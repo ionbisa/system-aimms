@@ -163,7 +163,7 @@ class PurchaseOrder extends Model
             return null;
         }
 
-        return '/storage/' . ltrim($path, '/');
+        return url('/media/' . ltrim($path, '/'));
     }
 
     public function getGaCompletionNoteAttribute(): ?string

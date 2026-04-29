@@ -74,7 +74,7 @@
 
         <div class="col-12">
             <label class="form-label">Foto</label>
-            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif">
         </div>
 
         <div class="col-12">

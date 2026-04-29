@@ -140,7 +140,7 @@ class AssetController extends Controller
             'type' => 'required|in:Delivery Cars,Personal Cars,Motorcycles,Office Assets',
             'status' => 'required|in:active,maintenance,disposed',
             'pic' => 'nullable|string|max:255',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'photo' => 'nullable|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif|max:10240',
         ], [
             'specification.max' => 'Spesifikasi maksimal ' . Asset::SPECIFICATION_MAX_LENGTH . ' karakter.',
         ]);

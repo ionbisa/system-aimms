@@ -29,7 +29,7 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique('users')->ignore($this->user()->id),
             ],
-            'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'profile_photo' => ['nullable', 'file', 'mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif', 'max:10240'],
         ];
     }
 }

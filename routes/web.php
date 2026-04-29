@@ -12,6 +12,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserManagementController;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,18 @@ Route::get('/', function () {
         ? redirect()->route('dashboard')
         : redirect()->route('login');
 });
+
+Route::get('/media/{path}', function (string $path) {
+    abort_if(Str::contains($path, ['..', '\\']), 404);
+
+    $file = storage_path('app/public/' . ltrim($path, '/'));
+
+    abort_unless(is_file($file), 404);
+
+    return response()->file($file, [
+        'Cache-Control' => 'public, max-age=604800',
+    ]);
+})->where('path', '.*')->name('media.show');
 
 /*
 |--------------------------------------------------------------------------

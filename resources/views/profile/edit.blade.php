@@ -79,7 +79,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Upload Foto Akun</label>
-                            <input type="file" name="profile_photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+                            <input type="file" name="profile_photo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif">
                         </div>
 
                         <div class="col-12">

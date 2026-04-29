@@ -479,7 +479,7 @@ class PurchaseOrderController extends Controller
 
         $validated = $request->validate([
             'note' => 'required|string|max:2000',
-            'receipt_file' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
+            'receipt_file' => 'required|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif,application/pdf|max:10240',
             'actual_total_price' => 'required|numeric|min:0',
         ]);
 

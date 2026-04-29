@@ -75,7 +75,7 @@
                         <div class="d-flex align-items-center gap-2">
                             @if($user->profile_photo_path)
                             <img
-                                src="{{ asset('storage/' . $user->profile_photo_path) }}"
+                                src="{{ url('media/' . ltrim($user->profile_photo_path, '/')) }}"
                                 alt="{{ $user->name }}"
                                 class="rounded-circle border"
                                 width="42"
@@ -150,7 +150,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Upload Foto User</label>
-                                            <input type="file" name="profile_photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+                                            <input type="file" name="profile_photo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif">
                                         </div>
                                     </div>
                                 </div>
@@ -258,7 +258,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Upload Foto User</label>
-                            <input type="file" name="profile_photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+                            <input type="file" name="profile_photo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif">
                         </div>
                     </div>
                 </div>

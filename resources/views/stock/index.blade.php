@@ -73,7 +73,7 @@
                     <td class="text-center">
                         @if($stock->photo)
                         <img
-                            src="{{ asset('storage/' . $stock->photo) }}"
+                            src="{{ url('media/' . ltrim($stock->photo, '/')) }}"
                             alt="{{ $stock->item_name }}"
                             width="60"
                             class="rounded"
@@ -126,7 +126,7 @@
                             </div>
                             <div class="modal-body">
                                 @if($stock->photo)
-                                <img src="{{ asset('storage/' . $stock->photo) }}" alt="{{ $stock->item_name }}" class="img-fluid rounded mb-3">
+                                <img src="{{ url('media/' . ltrim($stock->photo, '/')) }}" alt="{{ $stock->item_name }}" class="img-fluid rounded mb-3">
                                 @endif
 
                                 <div class="row g-3">
@@ -196,7 +196,7 @@
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label">Foto Barang</label>
-                                            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+                                            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif">
                                         </div>
                                     </div>
                                 </div>
@@ -273,7 +273,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">Foto Barang</label>
-                            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+                            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif">
                         </div>
                     </div>
                 </div>

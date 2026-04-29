@@ -75,12 +75,12 @@
 
         <div class="col-12">
             <label class="form-label">Foto</label>
-            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif">
         </div>
 
         @if($asset->photo)
         <div class="col-12">
-            <img src="{{ asset('storage/' . $asset->photo) }}" alt="{{ $asset->name }}" class="img-thumbnail" style="max-height: 180px;">
+            <img src="{{ url('media/' . ltrim($asset->photo, '/')) }}" alt="{{ $asset->name }}" class="img-thumbnail" style="max-height: 180px;">
         </div>
         @endif
 

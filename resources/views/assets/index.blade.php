@@ -205,7 +205,7 @@
                             <td class="text-center">
                                 @if($asset->photo)
                                 <img
-                                    src="{{ asset('storage/' . $asset->photo) }}"
+                                    src="{{ url('media/' . ltrim($asset->photo, '/')) }}"
                                     alt="{{ $asset->name }}"
                                     class="rounded border asset-thumb"
                                     data-bs-toggle="modal"
@@ -307,7 +307,7 @@
                             <div class="asset-modal-hero h-100">
                                 @if($asset->photo)
                                 <img
-                                    src="{{ asset('storage/' . $asset->photo) }}"
+                                    src="{{ url('media/' . ltrim($asset->photo, '/')) }}"
                                     alt="{{ $asset->name }}"
                                     class="asset-modal-photo"
                                 >

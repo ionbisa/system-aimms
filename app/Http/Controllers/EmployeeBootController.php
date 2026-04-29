@@ -47,7 +47,7 @@ class EmployeeBootController extends Controller
             'quantity_given' => 'required|integer|min:1',
             'condition' => 'required|in:Baru,Bekas Layak',
             'notes' => 'required|in:Baru,Distribusi Rutin,Pergantian Rusak',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'photo' => 'nullable|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif|max:10240',
         ]);
 
         $returnDate = Carbon::today();
@@ -74,7 +74,7 @@ class EmployeeBootController extends Controller
             'quantity_given' => 'required|integer|min:1',
             'condition' => 'required|in:Baru,Bekas Layak',
             'notes' => 'required|in:Baru,Distribusi Rutin,Pergantian Rusak',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'photo' => 'nullable|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif|max:10240',
         ]);
 
         if ($request->hasFile('photo')) {

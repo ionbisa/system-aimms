@@ -65,7 +65,7 @@ class UserManagementController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email',
             'role' => 'required|string|in:' . implode(',', $this->allowedRoles),
             'password' => ['required', 'confirmed', Password::min(8)],
-            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'profile_photo' => 'nullable|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif|max:10240',
         ]);
 
         Role::findOrCreate($validated['role']);
@@ -96,7 +96,7 @@ class UserManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role' => 'required|string|in:' . implode(',', $this->allowedRoles),
-            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'profile_photo' => 'nullable|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif|max:10240',
         ]);
 
         Role::findOrCreate($validated['role']);

@@ -158,6 +158,10 @@ class StockController extends Controller
             return $redirect;
         }
 
+        $request->merge([
+            'item_code' => trim((string) $request->input('item_code')),
+        ]);
+
         $validated = $request->validate([
             'item_code' => 'required|string|max:255|unique:stocks,item_code',
             'item_name' => 'required|string|max:255',
@@ -165,8 +169,16 @@ class StockController extends Controller
             'specification' => 'nullable|string',
             'unit' => 'required|in:PCS,BOX,Roll,DUS,Pack,Botol',
             'status' => 'required|string|max:255',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'photo' => 'nullable|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif|max:10240',
             'qty' => 'required|integer|min:0',
+        ], [
+            'item_code.unique' => 'Kode barang ini sudah terdaftar. Jika ingin menambah stok, gunakan menu Inbound. Jika ingin mengganti foto atau spesifikasi, gunakan tombol Edit pada data barang yang sudah ada.',
+            'photo.file' => 'Foto barang harus berupa file gambar.',
+            'photo.mimetypes' => 'Foto barang harus berformat JPG, JPEG, PNG, WebP, GIF, atau AVIF.',
+            'photo.max' => 'Ukuran foto barang maksimal 10 MB.',
+        ], [
+            'item_code' => 'kode barang',
+            'photo' => 'foto barang',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -250,6 +262,10 @@ class StockController extends Controller
             return $redirect;
         }
 
+        $request->merge([
+            'item_code' => trim((string) $request->input('item_code')),
+        ]);
+
         $validated = $request->validate([
             'item_code' => 'required|string|max:255|unique:stocks,item_code,' . $stock->id,
             'item_name' => 'required|string|max:255',
@@ -257,8 +273,16 @@ class StockController extends Controller
             'specification' => 'nullable|string',
             'unit' => 'required|in:PCS,BOX,Roll,DUS,Pack,Botol',
             'status' => 'required|string|max:255',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'photo' => 'nullable|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif|max:10240',
             'qty' => 'required|integer|min:0',
+        ], [
+            'item_code.unique' => 'Kode barang ini sudah dipakai oleh barang lain. Gunakan kode barang yang berbeda.',
+            'photo.file' => 'Foto barang harus berupa file gambar.',
+            'photo.mimetypes' => 'Foto barang harus berformat JPG, JPEG, PNG, WebP, GIF, atau AVIF.',
+            'photo.max' => 'Ukuran foto barang maksimal 10 MB.',
+        ], [
+            'item_code' => 'kode barang',
+            'photo' => 'foto barang',
         ]);
 
         if ($request->hasFile('photo')) {
