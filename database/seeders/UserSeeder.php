@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
             'Admin Produksi',
             'Kepala Produksi',
             'SPV Operasional',
+            'Supervisor Operasional',
             'Manager Operasional',
             'Manager Finance',
             'Direktur Operasional',

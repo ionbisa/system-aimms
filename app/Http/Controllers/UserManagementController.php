@@ -19,6 +19,7 @@ class UserManagementController extends Controller
         'Admin Produksi',
         'Kepala Produksi',
         'SPV Operasional',
+        'Supervisor Operasional',
         'Manager Operasional',
         'Manager Finance',
         'Direktur Operasional',

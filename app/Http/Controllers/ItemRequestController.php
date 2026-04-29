@@ -27,6 +27,7 @@ class ItemRequestController extends Controller
     protected array $creatorRoles = [
         'Admin Produksi',
         'SPV Operasional',
+        'Supervisor Operasional',
     ];
 
     protected array $viewerRoles = [
@@ -35,6 +36,7 @@ class ItemRequestController extends Controller
         'Admin Produksi',
         'Kepala Produksi',
         'SPV Operasional',
+        'Supervisor Operasional',
         'Manager Operasional',
         'Manager Finance',
         'Direktur Operasional',

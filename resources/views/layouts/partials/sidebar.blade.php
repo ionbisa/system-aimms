@@ -16,7 +16,7 @@
             </li>
 
             {{-- ASSET MANAGEMENT --}}
-            @role('Master Admin|Admin GA|Admin Produksi|Kepala Produksi|SPV Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
+            @role('Master Admin|Admin GA|Admin Produksi|Kepala Produksi|SPV Operasional|Supervisor Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#assetMenu">
                     <i class="bi bi-building me-2"></i> Asset Management
@@ -51,7 +51,7 @@
             @endrole
 
             {{-- ON STOCK --}}
-            @role('Master Admin|Admin GA|Admin Produksi|Kepala Produksi|SPV Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
+            @role('Master Admin|Admin GA|Admin Produksi|Kepala Produksi|SPV Operasional|Supervisor Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('stock.index') ? 'active' : '' }}" href="{{ route('stock.index') }}">
                     <i class="bi bi-box-seam me-2"></i> On Stock
@@ -87,7 +87,7 @@
             @endrole
 
             {{-- DAFTAR PERMINTAAN BARANG --}}
-            @role('Master Admin|Admin GA|Kepala Produksi|SPV Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
+            @role('Master Admin|Admin GA|Kepala Produksi|SPV Operasional|Supervisor Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('item-requests.*') ? 'active' : '' }}" href="{{ route('item-requests.index') }}">
                     <i class="bi bi-card-checklist me-2"></i> Daftar Permintaan Barang
@@ -96,7 +96,7 @@
             @endrole
 
             {{-- APD --}}
-            @role('Master Admin|Admin GA|Admin Produksi|Kepala Produksi|SPV Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
+            @role('Master Admin|Admin GA|Admin Produksi|Kepala Produksi|SPV Operasional|Supervisor Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('employee-boots.*') || request()->routeIs('employee-uniforms.*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#apdMenu" aria-expanded="{{ request()->routeIs('employee-boots.*') || request()->routeIs('employee-uniforms.*') ? 'true' : 'false' }}">
                     <i class="bi bi-shield-check me-2"></i> APD Karyawan
@@ -116,7 +116,7 @@
             @endrole
 
             {{-- REPORTING --}}
-            @role('Master Admin|Admin GA|Admin Produksi|Kepala Produksi|SPV Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
+            @role('Master Admin|Admin GA|Admin Produksi|Kepala Produksi|SPV Operasional|Supervisor Operasional|Manager Operasional|Manager Finance|Direktur Operasional')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#reportMenu">
                     <i class="bi bi-clipboard-data me-2"></i> Reporting
