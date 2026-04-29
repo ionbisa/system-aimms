@@ -339,7 +339,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Upload Bukti Nota</label>
-                            <input type="file" name="receipt_file" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                            <input type="file" name="receipt_file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" required>
                             <small class="text-muted">Format: JPG, PNG, atau PDF. Maksimal 5 MB.</small>
                         </div>
                         <div class="mb-3">

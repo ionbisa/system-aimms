@@ -150,7 +150,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Upload Foto User</label>
-                                            <input type="file" name="profile_photo" class="form-control">
+                                            <input type="file" name="profile_photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
                                         </div>
                                     </div>
                                 </div>
@@ -258,7 +258,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Upload Foto User</label>
-                            <input type="file" name="profile_photo" class="form-control">
+                            <input type="file" name="profile_photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
                         </div>
                     </div>
                 </div>

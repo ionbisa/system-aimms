@@ -165,7 +165,7 @@ class StockController extends Controller
             'specification' => 'nullable|string',
             'unit' => 'required|in:PCS,BOX,Roll,DUS,Pack,Botol',
             'status' => 'required|string|max:255',
-            'photo' => 'nullable|image|max:2048',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'qty' => 'required|integer|min:0',
         ]);
 
@@ -257,7 +257,7 @@ class StockController extends Controller
             'specification' => 'nullable|string',
             'unit' => 'required|in:PCS,BOX,Roll,DUS,Pack,Botol',
             'status' => 'required|string|max:255',
-            'photo' => 'nullable|image|max:2048',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'qty' => 'required|integer|min:0',
         ]);
 

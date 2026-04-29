@@ -179,7 +179,7 @@
                                             <label class="form-label">Satuan</label>
                                             <select name="unit" class="form-select" required>
                                                 <option value="PCS" @selected($stock->unit === 'PCS')>Pcs</option>
-                                                <option value="BOX" @selected($stock->unit === 'BO1X')>Box</option>
+                                                <option value="BOX" @selected($stock->unit === 'BOX')>Box</option>
                                                 <option value="Roll" @selected($stock->unit === 'Roll')>Roll</option>
                                                 <option value="DUS" @selected($stock->unit === 'DUS')>Dus</option>
                                                 <option value="Pack" @selected($stock->unit === 'Pack')>Pack</option>
@@ -196,7 +196,7 @@
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label">Foto Barang</label>
-                                            <input type="file" name="photo" class="form-control">
+                                            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
                                         </div>
                                     </div>
                                 </div>
@@ -273,7 +273,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">Foto Barang</label>
-                            <input type="file" name="photo" class="form-control">
+                            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
                         </div>
                     </div>
                 </div>

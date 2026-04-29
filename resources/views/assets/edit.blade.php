@@ -75,7 +75,7 @@
 
         <div class="col-12">
             <label class="form-label">Foto</label>
-            <input type="file" name="photo" class="form-control">
+            <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
         </div>
 
         @if($asset->photo)
