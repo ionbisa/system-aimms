@@ -61,6 +61,20 @@ class DashboardController extends Controller
         return "COALESCE(total_price, 0)";
     }
 
+    protected function purchaseOrderDateSql(): string
+    {
+        return 'COALESCE(transaction_date, created_at)';
+    }
+
+    protected function purchaseOrderMonthSql(): string
+    {
+        if (DB::getDriverName() === 'sqlite') {
+            return "CAST(strftime('%m', " . $this->purchaseOrderDateSql() . ') AS INTEGER)';
+        }
+
+        return 'MONTH(' . $this->purchaseOrderDateSql() . ')';
+    }
+
     public function index()
     {
         $currentMonth = Carbon::today();
@@ -75,8 +89,8 @@ class DashboardController extends Controller
             ->count();
         $stockSaatIni = $this->stockQuery()->sum('qty');
         $totalPengeluaran = $this->approvedPurchaseOrderExpenseQuery()
-            ->whereYear(DB::raw('COALESCE(transaction_date, created_at)'), $currentMonth->year)
-            ->whereMonth(DB::raw('COALESCE(transaction_date, created_at)'), $currentMonth->month)
+            ->whereYear(DB::raw($this->purchaseOrderDateSql()), $currentMonth->year)
+            ->whereMonth(DB::raw($this->purchaseOrderDateSql()), $currentMonth->month)
             ->sum(DB::raw($this->effectiveExpenseSql()));
 
         $assetActive = DB::table('assets')->where('status', 'active')->count();
@@ -115,10 +129,11 @@ class DashboardController extends Controller
             ->get();
 
         $currentYear = Carbon::today()->year;
+        $purchaseOrderMonthSql = $this->purchaseOrderMonthSql();
         $monthlyExpenseRows = $this->approvedPurchaseOrderExpenseQuery()
-            ->selectRaw('MONTH(COALESCE(transaction_date, created_at)) as month_number, SUM(' . $this->effectiveExpenseSql() . ') as monthly_total')
-            ->whereYear(DB::raw('COALESCE(transaction_date, created_at)'), $currentYear)
-            ->groupByRaw('MONTH(COALESCE(transaction_date, created_at))')
+            ->selectRaw($purchaseOrderMonthSql . ' as month_number, SUM(' . $this->effectiveExpenseSql() . ') as monthly_total')
+            ->whereYear(DB::raw($this->purchaseOrderDateSql()), $currentYear)
+            ->groupByRaw($purchaseOrderMonthSql)
             ->pluck('monthly_total', 'month_number');
 
         $monthlyExpenseLabels = [];

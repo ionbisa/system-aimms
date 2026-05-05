@@ -19,7 +19,7 @@
     <!-- Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="app-shell page-loading">
+<body class="app-shell">
 
 @include('layouts.partials.page-loader')
 

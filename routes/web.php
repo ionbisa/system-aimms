@@ -26,11 +26,20 @@ Route::get('/', function () {
 });
 
 Route::get('/media/{path}', function (string $path) {
-    abort_if(Str::contains($path, ['..', '\\']), 404);
+    $path = ltrim(rawurldecode($path), '/');
+    $path = Str::replaceStart('storage/', '', $path);
+    $path = Str::replaceStart('app/public/', '', $path);
 
-    $file = storage_path('app/public/' . ltrim($path, '/'));
+    abort_if(Str::contains($path, ['..', '\\']) || $path === '', 404);
 
-    abort_unless(is_file($file), 404);
+    $candidates = [
+        storage_path('app/public/' . $path),
+        public_path('storage/' . $path),
+    ];
+
+    $file = collect($candidates)->first(fn (string $candidate) => is_file($candidate));
+
+    abort_unless($file, 404);
 
     return response()->file($file, [
         'Cache-Control' => 'public, max-age=604800',

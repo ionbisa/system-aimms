@@ -35,7 +35,18 @@ class AppServiceProvider extends ServiceProvider
             $realizationNotifications = collect();
             $noteNotifications = collect();
 
-            if (! Auth::check() || ! Schema::hasTable('item_requests') || ! Schema::hasTable('item_request_approvals')) {
+            $itemRequestSchemaReady = Schema::hasTable('item_requests')
+                && Schema::hasTable('item_request_approvals')
+                && collect([
+                    'requested_at',
+                    'requested_by',
+                    'overall_status',
+                    'current_step',
+                    'ga_seen_at',
+                    'final_approved_at',
+                ])->every(fn (string $column) => Schema::hasColumn('item_requests', $column));
+
+            if (! Auth::check() || ! $itemRequestSchemaReady) {
                 $view->with('headerNotifications', collect());
                 $view->with('headerNotificationGroups', collect());
                 $view->with('headerNotificationCount', 0);
@@ -95,7 +106,7 @@ class AppServiceProvider extends ServiceProvider
 
                 $approvalNotifications = $approvalNotifications->concat($managerNotifications);
 
-                if (Schema::hasTable('purchase_orders') && Schema::hasTable('purchase_order_approvals')) {
+                if (Schema::hasTable('purchase_order_approvals') && $this->purchaseOrderNotificationSchemaReady()) {
                     $poManagerNotifications = PurchaseOrderApproval::query()
                         ->with('purchaseOrder')
                         ->where('role_name', 'Manager Operasional')
@@ -121,7 +132,7 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            if ($user->hasAnyRole(['Direktur Operasional', 'Master Admin']) && Schema::hasTable('purchase_orders') && Schema::hasTable('purchase_order_approvals')) {
+            if ($user->hasAnyRole(['Direktur Operasional', 'Master Admin']) && Schema::hasTable('purchase_order_approvals') && $this->purchaseOrderNotificationSchemaReady()) {
                 $directorNotifications = PurchaseOrderApproval::query()
                     ->with('purchaseOrder')
                     ->where('role_name', 'Direktur Operasional')
@@ -165,10 +176,7 @@ class AppServiceProvider extends ServiceProvider
 
                 $realizationNotifications = $realizationNotifications->concat($gaNotifications);
 
-                if (
-                    Schema::hasTable('purchase_orders')
-                    && Schema::hasColumn('purchase_orders', 'ga_seen_at')
-                ) {
+                if ($this->purchaseOrderNotificationSchemaReady()) {
                     $poGaNotifications = PurchaseOrder::query()
                         ->whereIn('overall_status', ['approved', 'pending'])
                         ->where('current_step', 'waiting_ga_completion')
@@ -189,7 +197,7 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            if ($user->hasAnyRole(['Manager Finance', 'Master Admin']) && Schema::hasTable('purchase_orders')) {
+            if ($user->hasAnyRole(['Manager Finance', 'Master Admin']) && $this->purchaseOrderNotificationSchemaReady()) {
                 $financeNotifications = PurchaseOrder::query()
                     ->where('overall_status', 'approved')
                     ->where('current_step', 'waiting_finance_realization')
@@ -332,5 +340,19 @@ class AppServiceProvider extends ServiceProvider
             $view->with('headerNotificationGroups', $notificationGroups);
             $view->with('headerNotificationCount', $notifications->count());
         });
+    }
+
+    protected function purchaseOrderNotificationSchemaReady(): bool
+    {
+        return Schema::hasTable('purchase_orders')
+            && collect([
+                'overall_status',
+                'current_step',
+                'ga_seen_at',
+                'finance_seen_at',
+                'realized_at',
+                'final_approved_at',
+                'transaction_date',
+            ])->every(fn (string $column) => Schema::hasColumn('purchase_orders', $column));
     }
 }

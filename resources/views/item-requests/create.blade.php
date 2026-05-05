@@ -143,7 +143,11 @@
             Array.from(tableBody.querySelectorAll('tr')).forEach((row, index) => {
                 row.querySelector('.row-number').textContent = index + 1;
 
-                row.querySelectorAll('input, textarea').forEach((field) => {
+                row.querySelectorAll('input, textarea, select').forEach((field) => {
+                    if (!field.name) {
+                        return;
+                    }
+
                     field.name = field.name.replace(/items\[\d+\]/, 'items[' + index + ']');
                 });
             });

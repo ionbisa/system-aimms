@@ -731,7 +731,7 @@ class ItemRequestController extends Controller
         foreach ($itemRequest->items as $requestItem) {
             if (($requestItem->procurement_type ?? 'stock_distribution') === 'purchase_request') {
                 $requestItem->update([
-                    'distributed_qty' => null,
+                    'distributed_qty' => 0,
                 ]);
 
                 continue;

@@ -22,6 +22,7 @@ class PurchaseOrder extends Model
         'unit_price',
         'total_price',
         'actual_total_price',
+        'status',
         'status_label',
         'photo',
         'requested_by',
@@ -159,11 +160,17 @@ class PurchaseOrder extends Model
             return null;
         }
 
-        if (! Storage::disk('public')->exists($path)) {
+        $path = ltrim($path, '/');
+
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, strlen('storage/'));
+        }
+
+        if (! Storage::disk('public')->exists($path) && ! is_file(public_path('storage/' . $path))) {
             return null;
         }
 
-        return url('/media/' . ltrim($path, '/'));
+        return route('media.show', ['path' => $path]);
     }
 
     public function getGaCompletionNoteAttribute(): ?string

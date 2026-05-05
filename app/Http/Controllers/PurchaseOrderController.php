@@ -211,6 +211,7 @@ class PurchaseOrderController extends Controller
                 'overall_status' => 'pending',
                 'current_step' => 'waiting_operational_manager',
                 'initial_note' => $validated['initial_note'] ?? null,
+                'status' => $this->legacyStatus('pending'),
                 'status_label' => 'Pending',
                 'total_price' => 0,
                 'last_action_at' => now(),
@@ -322,6 +323,7 @@ class PurchaseOrderController extends Controller
                 $purchaseOrder->update([
                     'overall_status' => 'pending',
                     'current_step' => 'waiting_director',
+                    'status' => $this->legacyStatus('pending'),
                     'status_label' => 'Pending',
                     'last_action_at' => now(),
                 ]);
@@ -331,6 +333,7 @@ class PurchaseOrderController extends Controller
                 $purchaseOrder->update([
                     'overall_status' => 'approved',
                     'current_step' => 'waiting_finance_realization',
+                    'status' => $this->legacyStatus('approved'),
                     'status_label' => 'Approved',
                     'final_approved_at' => now(),
                     'last_action_at' => now(),
@@ -340,6 +343,7 @@ class PurchaseOrderController extends Controller
             if ($action === 'pending') {
                 $purchaseOrder->update([
                     'overall_status' => 'pending',
+                    'status' => $this->legacyStatus('pending'),
                     'status_label' => 'Pending',
                     'last_action_at' => now(),
                 ]);
@@ -349,6 +353,7 @@ class PurchaseOrderController extends Controller
                 $purchaseOrder->update([
                     'overall_status' => 'rejected',
                     'current_step' => 'rejected',
+                    'status' => $this->legacyStatus('rejected'),
                     'status_label' => 'Rejected',
                     'rejected_at' => now(),
                     'last_action_at' => now(),
@@ -434,6 +439,11 @@ class PurchaseOrderController extends Controller
                     'reject' => 'Rejected',
                     default => 'Approved',
                 },
+                'status' => match ($financeAction) {
+                    'pending' => $this->legacyStatus('pending'),
+                    'reject' => $this->legacyStatus('rejected'),
+                    default => $this->legacyStatus('approved'),
+                },
                 'realization_status' => $realizationStatus,
                 'realization_note' => $validated['note'],
                 'realized_by' => $request->user()->id,
@@ -497,6 +507,7 @@ class PurchaseOrderController extends Controller
             $payload = [
                 'overall_status' => 'done',
                 'status_label' => 'Done',
+                'status' => $this->legacyStatus('done'),
                 'realization_status' => 'done',
                 'completed_at' => now(),
                 'current_step' => 'completed',
@@ -543,6 +554,7 @@ class PurchaseOrderController extends Controller
 
         $purchaseOrder->update([
             'overall_status' => 'pending',
+            'status' => $this->legacyStatus('pending'),
             'status_label' => 'Pending',
             'expired_at' => now(),
             'last_action_at' => now(),
@@ -843,6 +855,15 @@ class PurchaseOrderController extends Controller
         }
 
         return $query->where('overall_status', $status);
+    }
+
+    protected function legacyStatus(string $overallStatus): string
+    {
+        return match ($overallStatus) {
+            'approved', 'done' => 'Approved',
+            'rejected' => 'Rejected',
+            default => 'Pending',
+        };
     }
 
     protected function markSeen(Request $request, PurchaseOrder $purchaseOrder, ?PurchaseOrderApproval $activeApproval): void
