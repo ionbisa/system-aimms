@@ -50,6 +50,14 @@
             </div>
         </div>
         <div class="col-md-2">
+            <div class="card shadow-sm h-100 border-primary">
+                <div class="card-body">
+                    <small class="text-muted d-block">Done</small>
+                    <h3 class="mb-0 text-primary">{{ $summary->done_total ?? 0 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
             <div class="card shadow-sm h-100 border-danger">
                 <div class="card-body">
                     <small class="text-muted d-block">Rejected</small>
@@ -78,6 +86,7 @@
                 <option value="">Semua Status</option>
                 <option value="pending" @selected($status === 'pending')>Pending</option>
                 <option value="approved" @selected($status === 'approved')>Approved</option>
+                <option value="done" @selected($status === 'done')>Done</option>
                 <option value="rejected" @selected($status === 'rejected')>Rejected</option>
                 <option value="expired" @selected($status === 'expired')>Expired</option>
             </select>

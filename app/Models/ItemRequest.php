@@ -71,6 +71,7 @@ class ItemRequest extends Model
     {
         return match ($this->overall_status) {
             'approved' => 'Approved',
+            'done' => 'Done',
             'rejected' => 'Rejected',
             'expired' => 'Expired',
             default => 'Pending',
@@ -81,6 +82,7 @@ class ItemRequest extends Model
     {
         return match ($this->overall_status) {
             'approved' => 'bg-success',
+            'done' => 'bg-primary',
             'rejected' => 'bg-danger',
             'expired' => 'bg-secondary',
             default => 'bg-warning text-dark',

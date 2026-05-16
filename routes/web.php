@@ -26,9 +26,33 @@ Route::get('/', function () {
 });
 
 Route::get('/media/{path}', function (string $path) {
-    $path = ltrim(rawurldecode($path), '/');
-    $path = Str::replaceStart('storage/', '', $path);
-    $path = Str::replaceStart('app/public/', '', $path);
+    $path = str_replace('\\', '/', rawurldecode($path));
+    $urlPath = parse_url($path, PHP_URL_PATH);
+
+    if (is_string($urlPath) && $urlPath !== '') {
+        $path = $urlPath;
+    }
+
+    $storagePublicPath = str_replace('\\', '/', storage_path('app/public'));
+    $publicStoragePath = str_replace('\\', '/', public_path('storage'));
+
+    foreach ([$storagePublicPath, $publicStoragePath] as $basePath) {
+        if (Str::startsWith($path, $basePath . '/')) {
+            $path = ltrim(substr($path, strlen($basePath)), '/');
+            break;
+        }
+    }
+
+    $path = ltrim($path, '/');
+
+    foreach ([
+        'public/storage/',
+        'storage/app/public/',
+        'app/public/',
+        'storage/',
+    ] as $prefix) {
+        $path = Str::replaceStart($prefix, '', $path);
+    }
 
     abort_if(Str::contains($path, ['..', '\\']) || $path === '', 404);
 

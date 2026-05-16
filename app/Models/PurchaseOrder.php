@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PurchaseOrder extends Model
 {
@@ -154,16 +155,10 @@ class PurchaseOrder extends Model
 
     public function getReceiptFileUrlAttribute(): ?string
     {
-        $path = $this->receipt_file ?: $this->photo;
+        $path = $this->normalizeReceiptPath($this->receipt_file ?: $this->photo);
 
         if (! $path) {
             return null;
-        }
-
-        $path = ltrim($path, '/');
-
-        if (str_starts_with($path, 'storage/')) {
-            $path = substr($path, strlen('storage/'));
         }
 
         if (! Storage::disk('public')->exists($path) && ! is_file(public_path('storage/' . $path))) {
@@ -171,6 +166,44 @@ class PurchaseOrder extends Model
         }
 
         return route('media.show', ['path' => $path]);
+    }
+
+    protected function normalizeReceiptPath(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        $path = str_replace('\\', '/', trim($path));
+        $urlPath = parse_url($path, PHP_URL_PATH);
+
+        if (is_string($urlPath) && $urlPath !== '') {
+            $path = $urlPath;
+        }
+
+        $storagePublicPath = str_replace('\\', '/', storage_path('app/public'));
+        $publicStoragePath = str_replace('\\', '/', public_path('storage'));
+
+        foreach ([$storagePublicPath, $publicStoragePath] as $basePath) {
+            if (Str::startsWith($path, $basePath . '/')) {
+                return ltrim(substr($path, strlen($basePath)), '/');
+            }
+        }
+
+        $path = ltrim($path, '/');
+
+        foreach ([
+            'public/storage/',
+            'storage/app/public/',
+            'app/public/',
+            'storage/',
+        ] as $prefix) {
+            if (Str::startsWith($path, $prefix)) {
+                $path = Str::after($path, $prefix);
+            }
+        }
+
+        return $path !== '' ? $path : null;
     }
 
     public function getGaCompletionNoteAttribute(): ?string

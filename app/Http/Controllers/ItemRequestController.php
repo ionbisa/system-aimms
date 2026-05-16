@@ -96,6 +96,7 @@ class ItemRequestController extends Controller
             ->selectRaw('COUNT(*) as total')
             ->selectRaw("SUM(CASE WHEN overall_status = 'pending' THEN 1 ELSE 0 END) as pending_total")
             ->selectRaw("SUM(CASE WHEN overall_status = 'approved' THEN 1 ELSE 0 END) as approved_total")
+            ->selectRaw("SUM(CASE WHEN overall_status = 'done' THEN 1 ELSE 0 END) as done_total")
             ->selectRaw("SUM(CASE WHEN overall_status = 'rejected' THEN 1 ELSE 0 END) as rejected_total")
             ->selectRaw("SUM(CASE WHEN overall_status = 'expired' THEN 1 ELSE 0 END) as expired_total")
             ->first();
@@ -367,6 +368,7 @@ class ItemRequestController extends Controller
             }
 
             $itemRequest->update([
+                'overall_status' => $realizationStatus === 'distributed' ? 'done' : 'approved',
                 'realization_status' => $realizationStatus,
                 'realization_note' => $validated['note'],
                 'realized_by' => $request->user()->id,
@@ -701,9 +703,9 @@ class ItemRequestController extends Controller
                         $assetQuery->whereNotIn('type', $this->assetManagementTypes);
                     });
             })
-            ->whereNotNull('item_code')
-            ->where('item_code', 'like', 'BRG-%')
+            ->whereNotNull('item_name')
             ->orderBy('item_name')
+            ->orderBy('item_code')
             ->get();
     }
 
