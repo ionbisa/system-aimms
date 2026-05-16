@@ -41,6 +41,18 @@ class PurchaseOrderReceiptLinkTest extends TestCase
         Storage::disk('public')->delete('purchase-orders/receipts/nota-test.txt');
     }
 
+    public function test_legacy_storage_url_serves_receipt_files(): void
+    {
+        Storage::disk('public')->put('purchase-orders/receipts/nota-storage.txt', 'nota');
+
+        $response = $this->get('/storage/purchase-orders/receipts/nota-storage.txt');
+
+        $response->assertOk();
+        $this->assertSame('nota', file_get_contents($response->baseResponse->getFile()->getPathname()));
+
+        Storage::disk('public')->delete('purchase-orders/receipts/nota-storage.txt');
+    }
+
     public function test_receipt_file_url_supports_full_media_urls(): void
     {
         Storage::fake('public');

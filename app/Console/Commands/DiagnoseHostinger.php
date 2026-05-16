@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 
 class DiagnoseHostinger extends Command
 {
-    protected $signature = 'aimms:diagnose-hostinger';
+    protected $signature = 'aimms:diagnose-hostinger {media_path? : Optional storage/media path to check}';
 
     protected $description = 'Check live Hostinger readiness for stock selection and purchase order receipt media.';
 
@@ -23,6 +23,7 @@ class DiagnoseHostinger extends Command
 
         $this->checkDatabaseConnection();
         $this->checkStockSelection();
+        $this->checkSpecificMediaPath();
         $this->checkPurchaseOrderReceipts();
 
         return self::SUCCESS;
@@ -78,6 +79,29 @@ class DiagnoseHostinger extends Command
 
         if ($namedStocks === 0) {
             $this->warn('WARNING: dropdown On Stock akan kosong karena tidak ada stocks.item_name yang terisi.');
+        }
+
+        $this->newLine();
+    }
+
+    protected function checkSpecificMediaPath(): void
+    {
+        $mediaPath = $this->argument('media_path');
+
+        if (! $mediaPath) {
+            return;
+        }
+
+        $this->info('Cek File Spesifik');
+        $this->line('Input: ' . $mediaPath);
+        $this->line('Normalized: ' . (PublicMedia::normalizePath($mediaPath) ?? '-'));
+
+        $file = PublicMedia::findFile($mediaPath);
+
+        if ($file) {
+            $this->line('OK: file ditemukan: ' . $file);
+        } else {
+            $this->error('ERROR: file tidak ditemukan oleh Laravel.');
         }
 
         $this->newLine();

@@ -25,14 +25,17 @@ Route::get('/', function () {
         : redirect()->route('login');
 });
 
-Route::get('/media/{path}', function (string $path) {
+$servePublicMedia = function (string $path) {
     $file = PublicMedia::findFile($path);
     abort_unless($file, 404);
 
     return response()->file($file, [
         'Cache-Control' => 'public, max-age=604800',
     ]);
-})->where('path', '.*')->name('media.show');
+};
+
+Route::get('/media/{path}', $servePublicMedia)->where('path', '.*')->name('media.show');
+Route::get('/storage/{path}', $servePublicMedia)->where('path', '.*')->name('storage.media.show');
 
 /*
 |--------------------------------------------------------------------------
