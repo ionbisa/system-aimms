@@ -163,6 +163,24 @@ class PurchaseOrder extends Model
         return route('media.show', ['path' => $path]);
     }
 
+    public function getReceiptFileIsImageAttribute(): bool
+    {
+        $path = PublicMedia::normalizePath($this->receipt_file ?: $this->photo);
+
+        if (! $path) {
+            return false;
+        }
+
+        return in_array(strtolower(pathinfo($path, PATHINFO_EXTENSION)), [
+            'jpg',
+            'jpeg',
+            'png',
+            'webp',
+            'gif',
+            'avif',
+        ], true);
+    }
+
     public function getGaCompletionNoteAttribute(): ?string
     {
         if (! empty($this->receipt_note)) {

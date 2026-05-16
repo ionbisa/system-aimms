@@ -70,4 +70,24 @@ class PurchaseOrderReceiptLinkTest extends TestCase
             $purchaseOrder->receipt_file_url
         );
     }
+
+    public function test_receipt_file_image_detection(): void
+    {
+        $imageReceipt = PurchaseOrder::query()->create([
+            'po_number' => '003/BBP/GA/V/2026',
+            'total_price' => 5000,
+            'status' => 'Approved',
+            'receipt_file' => 'storage/app/public/purchase-orders/receipts/nota.jpg',
+        ]);
+
+        $pdfReceipt = PurchaseOrder::query()->create([
+            'po_number' => '004/BBP/GA/V/2026',
+            'total_price' => 5000,
+            'status' => 'Approved',
+            'receipt_file' => 'storage/app/public/purchase-orders/receipts/nota.pdf',
+        ]);
+
+        $this->assertTrue($imageReceipt->receipt_file_is_image);
+        $this->assertFalse($pdfReceipt->receipt_file_is_image);
+    }
 }

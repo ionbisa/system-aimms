@@ -1,0 +1,9 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # If the hosting document root exposes the project root, /storage/... may
+    # enter this physical directory before Laravel can route it. Send public
+    # media requests back to the front controller.
+    RewriteRule ^(.*)$ ../index.php [L]
+</IfModule>
+

@@ -251,7 +251,28 @@
                         <div>Rp {{ number_format((float) $purchaseOrder->effective_total_price, 0, ',', '.') }}</div>
                         <small class="text-muted d-block mt-2">Bukti Nota</small>
                         @if($purchaseOrder->receipt_file_url)
-                        <div><a href="{{ $purchaseOrder->receipt_file_url }}" target="_blank">Lihat bukti nota</a></div>
+                            @if($purchaseOrder->receipt_file_is_image)
+                            <button
+                                type="button"
+                                class="btn p-0 border-0 bg-transparent text-start"
+                                data-bs-toggle="modal"
+                                data-bs-target="#receiptPreviewModal"
+                            >
+                                <img
+                                    src="{{ $purchaseOrder->receipt_file_url }}"
+                                    alt="Bukti Nota {{ $purchaseOrder->po_number }}"
+                                    class="img-fluid rounded border"
+                                    style="max-height: 220px; object-fit: contain;"
+                                >
+                            </button>
+                            <div class="small text-muted mt-1">Klik foto untuk memperbesar.</div>
+                            @else
+                            <div>
+                                <a href="{{ $purchaseOrder->receipt_file_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    Buka bukti nota
+                                </a>
+                            </div>
+                            @endif
                         @else
                         <div>-</div>
                         @endif
@@ -370,6 +391,31 @@
         </div>
     </div>
 </div>
+
+@if($purchaseOrder->receipt_file_url && $purchaseOrder->receipt_file_is_image)
+<div class="modal fade" id="receiptPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bukti Nota {{ $purchaseOrder->po_number }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body text-center bg-light">
+                <img
+                    src="{{ $purchaseOrder->receipt_file_url }}"
+                    alt="Bukti Nota {{ $purchaseOrder->po_number }}"
+                    class="img-fluid rounded"
+                    style="max-height: 80vh; object-fit: contain;"
+                >
+            </div>
+            <div class="modal-footer">
+                <a href="{{ $purchaseOrder->receipt_file_url }}" target="_blank" class="btn btn-outline-primary">Buka di Tab Baru</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
