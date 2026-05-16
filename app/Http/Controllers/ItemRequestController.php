@@ -696,14 +696,8 @@ class ItemRequestController extends Controller
         }
 
         return Stock::query()
-            ->where(function ($query) {
-                $query->whereNull('asset_id')
-                    ->orWhereDoesntHave('asset')
-                    ->orWhereHas('asset', function ($assetQuery) {
-                        $assetQuery->whereNotIn('type', $this->assetManagementTypes);
-                    });
-            })
             ->whereNotNull('item_name')
+            ->where('item_name', '<>', '')
             ->orderBy('item_name')
             ->orderBy('item_code')
             ->get();
