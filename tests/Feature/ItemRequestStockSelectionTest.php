@@ -35,4 +35,27 @@ class ItemRequestStockSelectionTest extends TestCase
             ->assertSeeText('Pilih dari On Stock')
             ->assertSeeText('STK-001 - Sarung Tangan Nitrile');
     }
+
+    public function test_create_form_handles_stock_names_with_javascript_sensitive_characters(): void
+    {
+        $role = Role::query()->create(['name' => 'Admin Produksi']);
+        $user = User::factory()->create();
+        $user->assignRole($role);
+
+        Stock::query()->create([
+            'item_code' => 'STK-002',
+            'item_name' => 'Lakban `Bening` "2 inch"',
+            'qty' => 35,
+            'unit' => 'Roll',
+            'status' => 'ready',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('item-requests.create'));
+
+        $response
+            ->assertOk()
+            ->assertSeeText('STK-002 - Lakban `Bening` "2 inch"');
+    }
 }

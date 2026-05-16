@@ -12,7 +12,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserManagementController;
-use Illuminate\Support\Str;
+use App\Support\PublicMedia;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,43 +26,7 @@ Route::get('/', function () {
 });
 
 Route::get('/media/{path}', function (string $path) {
-    $path = str_replace('\\', '/', rawurldecode($path));
-    $urlPath = parse_url($path, PHP_URL_PATH);
-
-    if (is_string($urlPath) && $urlPath !== '') {
-        $path = $urlPath;
-    }
-
-    $storagePublicPath = str_replace('\\', '/', storage_path('app/public'));
-    $publicStoragePath = str_replace('\\', '/', public_path('storage'));
-
-    foreach ([$storagePublicPath, $publicStoragePath] as $basePath) {
-        if (Str::startsWith($path, $basePath . '/')) {
-            $path = ltrim(substr($path, strlen($basePath)), '/');
-            break;
-        }
-    }
-
-    $path = ltrim($path, '/');
-
-    foreach ([
-        'public/storage/',
-        'storage/app/public/',
-        'app/public/',
-        'storage/',
-    ] as $prefix) {
-        $path = Str::replaceStart($prefix, '', $path);
-    }
-
-    abort_if(Str::contains($path, ['..', '\\']) || $path === '', 404);
-
-    $candidates = [
-        storage_path('app/public/' . $path),
-        public_path('storage/' . $path),
-    ];
-
-    $file = collect($candidates)->first(fn (string $candidate) => is_file($candidate));
-
+    $file = PublicMedia::findFile($path);
     abort_unless($file, 404);
 
     return response()->file($file, [

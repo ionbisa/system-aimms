@@ -50,7 +50,7 @@
                             <tr class="text-center">
                                 <th style="width: 60px;">No</th>
                                 @if($supportsStockSelection ?? false)
-                                <th>Pilih dari On Stock</th>
+                                <th style="min-width: 280px;">Pilih dari On Stock</th>
                                 @endif
                                 @if($supportsProcurementType ?? false)
                                 <th style="width: 170px;">Jenis Permintaan</th>
@@ -69,7 +69,7 @@
                                 @if($supportsStockSelection ?? false)
                                 <td>
                                     <select name="items[0][stock_id]" class="form-select stock-selector">
-                                        <option value="">Tidak pilih stok / barang baru</option>
+                                        <option value="">{{ $stocks->isEmpty() ? 'Belum ada data On Stock' : 'Tidak pilih stok / barang baru' }}</option>
                                         @foreach($stocks as $stock)
                                         <option value="{{ $stock->id }}" data-item-name="{{ $stock->item_name }}" data-unit="{{ $stock->unit }}" data-stock-qty="{{ $stock->qty }}">
                                             {{ $stock->item_code ?: '-' }} - {{ $stock->item_name }} (stok: {{ $stock->qty }} {{ $stock->unit ?: '' }})
@@ -134,10 +134,45 @@
     </div>
 </div>
 
+@php
+    $stockOptions = $stocks->map(fn ($stock) => [
+        'id' => (int) $stock->id,
+        'item_code' => $stock->item_code ?: '-',
+        'item_name' => $stock->item_name ?: '',
+        'unit' => $stock->unit ?: '',
+        'qty' => (float) $stock->qty,
+    ])->values();
+@endphp
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const tableBody = document.querySelector('#itemRequestItemsTable tbody');
         const addRowButton = document.getElementById('addItemRow');
+        const stockOptions = @json($stockOptions);
+
+        const escapeHtml = (value) => String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
+        const stockSelectorHtml = () => {
+            const placeholder = stockOptions.length > 0
+                ? 'Tidak pilih stok / barang baru'
+                : 'Belum ada data On Stock';
+
+            const options = stockOptions.map((stock) => {
+                const label = `${stock.item_code || '-'} - ${stock.item_name || '-'} (stok: ${stock.qty} ${stock.unit || ''})`;
+
+                return `<option value="${stock.id}" data-item-name="${escapeHtml(stock.item_name)}" data-unit="${escapeHtml(stock.unit)}" data-stock-qty="${stock.qty}">${escapeHtml(label)}</option>`;
+            }).join('');
+
+            return `<select name="items[0][stock_id]" class="form-select stock-selector">
+                <option value="">${escapeHtml(placeholder)}</option>
+                ${options}
+            </select>`;
+        };
 
         const renumberRows = () => {
             Array.from(tableBody.querySelectorAll('tr')).forEach((row, index) => {
@@ -159,14 +194,7 @@
                 <td class="text-center row-number"></td>
                 @if($supportsStockSelection ?? false)
                 <td>
-                    <select name="items[0][stock_id]" class="form-select stock-selector">
-                        <option value="">Tidak pilih stok / barang baru</option>
-                        @foreach($stocks as $stock)
-                        <option value="{{ $stock->id }}" data-item-name="{{ $stock->item_name }}" data-unit="{{ $stock->unit }}" data-stock-qty="{{ $stock->qty }}">
-                            {{ $stock->item_code ?: '-' }} - {{ $stock->item_name }} (stok: {{ $stock->qty }} {{ $stock->unit ?: '' }})
-                        </option>
-                        @endforeach
-                    </select>
+                    ${stockSelectorHtml()}
                 </td>
                 @endif
                 @if($supportsProcurementType ?? false)
