@@ -76,7 +76,7 @@
             <tr>
                 <th>No</th>
                 <th>No Permintaan</th>
-                <th>Tanggal</th>
+                <th>Tanggal & Waktu</th>
                 <th>Divisi</th>
                 <th>Pemohon</th>
                 <th>Barang</th>

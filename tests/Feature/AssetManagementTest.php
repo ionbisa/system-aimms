@@ -228,6 +228,116 @@ class AssetManagementTest extends TestCase
             ->assertSeeText('Gudang Sparepart');
     }
 
+    public function test_on_stock_items_are_sorted_by_item_code(): void
+    {
+        $user = User::factory()->create();
+
+        foreach ([
+            'BRG/GA-SPL/V/2026/001',
+            'BRG/GA-ATK/III/2026/001',
+            'BRG/GA-MP/V/2026/001',
+            'BRG/GA-HSK/V/2026/001',
+        ] as $itemCode) {
+            Stock::query()->create([
+                'item_code' => $itemCode,
+                'item_name' => 'Barang ' . $itemCode,
+                'location' => 'Gudang',
+                'qty' => 10,
+                'unit' => 'PCS',
+                'status' => 'ready',
+            ]);
+        }
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('stock.index'));
+
+        $response
+            ->assertOk()
+            ->assertSeeTextInOrder([
+                'BRG/GA-ATK/III/2026/001',
+                'BRG/GA-HSK/V/2026/001',
+                'BRG/GA-MP/V/2026/001',
+                'BRG/GA-SPL/V/2026/001',
+            ]);
+    }
+
+    public function test_purchase_order_report_shows_item_unit_and_unit_price(): void
+    {
+        $user = User::factory()->create();
+
+        $purchaseOrderId = DB::table('purchase_orders')->insertGetId([
+            'po_number' => 'PO-REPORT-001',
+            'transaction_date' => '2026-04-15',
+            'transaction_type' => 'Pembelian Barang',
+            'division' => 'GA',
+            'category' => 'Sparepart',
+            'description' => 'Pembelian kebutuhan gudang',
+            'vendor' => 'Vendor Test',
+            'qty' => 0,
+            'unit' => null,
+            'unit_price' => 0,
+            'total_price' => 150000,
+            'status' => 'Approved',
+            'status_label' => 'Approved',
+            'created_at' => '2026-04-15 08:00:00',
+            'updated_at' => '2026-04-15 08:00:00',
+        ]);
+
+        DB::table('purchase_order_items')->insert([
+            'purchase_order_id' => $purchaseOrderId,
+            'line_number' => 1,
+            'item_name' => 'Filter Mesin',
+            'qty' => 3,
+            'unit' => 'PCS',
+            'estimated_unit_price' => 50000,
+            'estimated_total_price' => 150000,
+            'created_at' => '2026-04-15 08:00:00',
+            'updated_at' => '2026-04-15 08:00:00',
+        ]);
+
+        $reportParameters = [
+            'type' => 'purchase_orders',
+            'start_date' => '2026-04-15',
+            'end_date' => '2026-04-15',
+        ];
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('reports.daily', $reportParameters));
+
+        $response
+            ->assertOk()
+            ->assertSeeText('Data Pembelian / Purchase Order')
+            ->assertSeeText('Satuan')
+            ->assertSeeText('Harga Satuan')
+            ->assertSeeText('PCS')
+            ->assertSeeText('Rp 50.000');
+
+        $printResponse = $this
+            ->actingAs($user)
+            ->get(route('reports.print', array_merge(['preset' => 'daily'], $reportParameters)));
+
+        $printResponse
+            ->assertOk()
+            ->assertSeeText('Satuan')
+            ->assertSeeText('Harga Satuan')
+            ->assertSeeText('PCS')
+            ->assertSeeText('Rp 50.000');
+
+        $exportResponse = $this
+            ->actingAs($user)
+            ->get(route('reports.export-excel', array_merge(['preset' => 'daily'], $reportParameters)));
+
+        $exportContent = $exportResponse->streamedContent();
+
+        $exportResponse->assertOk();
+        $this->assertStringContainsString('satuan', $exportContent);
+        $this->assertStringContainsString('harga_satuan', $exportContent);
+        $this->assertStringContainsString('PCS', $exportContent);
+        $this->assertStringContainsString('Rp 50.000', $exportContent);
+    }
+
     public function test_stock_inbound_report_filters_by_selected_period(): void
     {
         $user = User::factory()->create();
@@ -267,8 +377,39 @@ class AssetManagementTest extends TestCase
         $response
             ->assertOk()
             ->assertSeeText('Barang Masuk')
+            ->assertSeeText('Satuan')
             ->assertSeeText('Filter Oli Mesin')
+            ->assertSeeText('PCS')
             ->assertDontSeeText('Filter Oli Lama');
+
+        $printResponse = $this
+            ->actingAs($user)
+            ->get(route('reports.print', [
+                'preset' => 'daily',
+                'type' => 'stock_inbounds',
+                'start_date' => '2026-04-10',
+                'end_date' => '2026-04-10',
+            ]));
+
+        $printResponse
+            ->assertOk()
+            ->assertSeeText('Satuan')
+            ->assertSeeText('PCS');
+
+        $exportResponse = $this
+            ->actingAs($user)
+            ->get(route('reports.export-excel', [
+                'preset' => 'daily',
+                'type' => 'stock_inbounds',
+                'start_date' => '2026-04-10',
+                'end_date' => '2026-04-10',
+            ]));
+
+        $exportContent = $exportResponse->streamedContent();
+
+        $exportResponse->assertOk();
+        $this->assertStringContainsString('satuan', $exportContent);
+        $this->assertStringContainsString('PCS', $exportContent);
     }
 
     public function test_stock_outbound_report_filters_by_selected_period(): void

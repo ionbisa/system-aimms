@@ -25,20 +25,21 @@ class PurchaseOrderController extends Controller
     protected array $divisions = [
         'Bakso (SMS)',
         'Basreng',
-        'Kwetiau',
-        'Otak-otak',
-        'MDM',
-        'PBB',
         'Boiler',
-        'Meswin Produksi',
-        'HRD',
         'Finance',
-        'Marketing',
         'GA',
+        'HRD',
         'Kendaraan',
-        'Produksi',
-        'Operasional',
+        'Kwetiau',
         'Lain-lain',
+        'Marketing',
+        'MDM',
+        'Mesin Produksi',
+        'Operasional',
+        'Otak-otak',
+        'PBB',
+        'Produksi',
+        'Umum',
     ];
 
     protected array $creatorRoles = [
@@ -602,7 +603,7 @@ class PurchaseOrderController extends Controller
             ->get();
 
         $filename = 'purchase-order-' . $selectedMonth->format('Y-m') . '-' . now()->format('His') . '.csv';
-        $columns = ['No', 'No PO', 'Tanggal', 'Jenis', 'Divisi', 'Kategori', 'Vendor', 'Uraian', 'Dibuat Oleh', 'Status', 'Tahap', 'Realisasi', 'Total Harga', 'Ringkasan'];
+        $columns = ['No', 'No PO', 'Tanggal & Waktu', 'Jenis', 'Divisi', 'Kategori', 'Vendor', 'Uraian', 'Dibuat Oleh', 'Status', 'Tahap', 'Realisasi', 'Total Harga', 'Ringkasan'];
 
         return response()->streamDownload(function () use ($rows, $columns) {
             $handle = fopen('php://output', 'w');
@@ -612,7 +613,7 @@ class PurchaseOrderController extends Controller
                 fputcsv($handle, [
                     $index + 1,
                     $row->po_number,
-                    optional($row->transaction_date)->format('d-m-Y'),
+                    optional($row->created_at)->format('d-m-Y H:i') ?? optional($row->transaction_date)->format('d-m-Y'),
                     $row->transaction_type,
                     $row->division,
                     $row->category,

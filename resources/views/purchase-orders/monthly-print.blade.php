@@ -58,7 +58,7 @@
             <tr>
                 <th>No</th>
                 <th>No PO</th>
-                <th>Tanggal</th>
+                <th>Tanggal & Waktu</th>
                 <th>Jenis</th>
                 <th>Divisi</th>
                 <th>Kategori</th>
@@ -77,7 +77,7 @@
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $purchaseOrder->po_number }}</td>
-                <td>{{ optional($purchaseOrder->transaction_date)->format('d-m-Y') }}</td>
+                <td>{{ optional($purchaseOrder->created_at)->format('d-m-Y H:i') ?? optional($purchaseOrder->transaction_date)->format('d-m-Y') }}</td>
                 <td>{{ $purchaseOrder->transaction_type }}</td>
                 <td>{{ $purchaseOrder->division }}</td>
                 <td>{{ $purchaseOrder->category ?: '-' }}</td>

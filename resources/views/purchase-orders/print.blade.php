@@ -59,8 +59,8 @@
             <tr>
                 <td style="width:25%;"><strong>No PO</strong></td>
                 <td style="width:25%;">: {{ $purchaseOrder->po_number }}</td>
-                <td style="width:25%;"><strong>Tanggal</strong></td>
-                <td style="width:25%;">: {{ optional($purchaseOrder->transaction_date)->format('d-m-Y') }}</td>
+                <td style="width:25%;"><strong>Tanggal & Waktu</strong></td>
+                <td style="width:25%;">: {{ optional($purchaseOrder->created_at)->format('d-m-Y H:i:s') ?? optional($purchaseOrder->transaction_date)->format('d-m-Y') }}</td>
             </tr>
             <tr>
                 <td><strong>Jenis</strong></td>

@@ -56,6 +56,7 @@
                     <th>No</th>
                     <th>Nama Barang</th>
                     <th>Qty</th>
+                    <th>Satuan</th>
                     <th>Waktu Input</th>
                 </tr>
             </thead>
@@ -65,11 +66,12 @@
                     <td class="text-center">{{ method_exists($inbounds, 'firstItem') ? $inbounds->firstItem() + $index : $index + 1 }}</td>
                     <td>{{ $item->item_name }}</td>
                     <td class="text-center">{{ $item->qty }}</td>
+                    <td class="text-center">{{ $item->unit ?? '-' }}</td>
                     <td class="text-center">{{ \Carbon\Carbon::parse($item->created_at)->format('d-m-Y H:i') }}</td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="text-center text-muted">Data barang masuk bulan {{ $currentMonth->translatedFormat('F Y') }} tidak ditemukan.</td>
+                    <td colspan="5" class="text-center text-muted">Data barang masuk bulan {{ $currentMonth->translatedFormat('F Y') }} tidak ditemukan.</td>
                 </tr>
                 @endforelse
             </tbody>

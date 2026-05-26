@@ -152,6 +152,11 @@ class ReportController extends Controller
         return $fallback->copy();
     }
 
+    protected function formatQuantity(mixed $value): string
+    {
+        return rtrim(rtrim(number_format((float) $value, 2, '.', ''), '0'), '.');
+    }
+
     protected function purchaseOrderRows(Carbon $startDate, Carbon $endDate, string $division = ''): array
     {
         $hasTransactionDate = $this->hasColumn('purchase_orders', 'transaction_date');
@@ -164,12 +169,18 @@ class ReportController extends Controller
         $hasUnit = $this->hasColumn('purchase_orders', 'unit');
         $hasUnitPrice = $this->hasColumn('purchase_orders', 'unit_price');
         $hasStatusLabel = $this->hasColumn('purchase_orders', 'status_label');
+        $hasPurchaseOrderItems = $this->hasTable('purchase_order_items')
+            && $this->hasColumn('purchase_order_items', 'purchase_order_id')
+            && $this->hasColumn('purchase_order_items', 'qty')
+            && $this->hasColumn('purchase_order_items', 'unit')
+            && $this->hasColumn('purchase_order_items', 'estimated_unit_price');
         $effectiveTotalPriceSql = $this->hasColumn('purchase_orders', 'actual_total_price')
             ? 'COALESCE(actual_total_price, total_price, 0)'
             : 'COALESCE(total_price, 0)';
 
-        $rows = DB::table('purchase_orders')
+        $baseRows = DB::table('purchase_orders')
             ->select(
+                'purchase_orders.id',
                 'po_number',
                 DB::raw(($hasTransactionDate ? 'COALESCE(transaction_date, DATE(created_at))' : 'DATE(created_at)') . ' as tanggal'),
                 DB::raw(($hasTransactionType ? 'COALESCE(transaction_type, "-")' : "'-'") . ' as jenis_transaksi'),
@@ -193,8 +204,25 @@ class ReportController extends Controller
             ->whereBetween(DB::raw($hasTransactionDate ? 'COALESCE(transaction_date, DATE(created_at))' : 'DATE(created_at)'), [$startDate->toDateString(), $endDate->toDateString()])
             ->when($division !== '' && $hasDivision, fn ($query) => $query->where('division', $division))
             ->orderByDesc(DB::raw($hasTransactionDate ? 'COALESCE(transaction_date, created_at)' : 'created_at'))
-            ->get()
-            ->map(function ($row, $index) {
+            ->get();
+
+        $itemsByPurchaseOrder = collect();
+
+        if ($hasPurchaseOrderItems && $baseRows->isNotEmpty()) {
+            $itemsByPurchaseOrder = DB::table('purchase_order_items')
+                ->select('purchase_order_id', 'qty', 'unit', 'estimated_unit_price')
+                ->whereIn('purchase_order_id', $baseRows->pluck('id')->all())
+                ->orderBy('line_number')
+                ->orderBy('id')
+                ->get()
+                ->groupBy('purchase_order_id');
+        }
+
+        $rows = $baseRows
+            ->map(function ($row, $index) use ($itemsByPurchaseOrder) {
+                $items = $itemsByPurchaseOrder->get($row->id, collect());
+                $hasItems = $items->isNotEmpty();
+
                 return [
                     'no' => $index + 1,
                     'no_po' => $row->po_number,
@@ -204,9 +232,15 @@ class ReportController extends Controller
                     'kategori' => $row->kategori,
                     'uraian' => $row->uraian,
                     'vendor' => $row->vendor,
-                    'qty' => rtrim(rtrim(number_format((float) $row->qty, 2, '.', ''), '0'), '.'),
-                    'satuan' => $row->satuan,
-                    'harga_satuan' => 'Rp ' . number_format((float) $row->harga_satuan, 0, ',', '.'),
+                    'qty' => $hasItems
+                        ? $items->map(fn ($item) => $this->formatQuantity($item->qty))->implode('; ')
+                        : $this->formatQuantity($row->qty),
+                    'satuan' => $hasItems
+                        ? $items->map(fn ($item) => $item->unit ?: '-')->implode('; ')
+                        : $row->satuan,
+                    'harga_satuan' => $hasItems
+                        ? $items->map(fn ($item) => 'Rp ' . number_format((float) $item->estimated_unit_price, 0, ',', '.'))->implode('; ')
+                        : 'Rp ' . number_format((float) $row->harga_satuan, 0, ',', '.'),
                     'total_harga' => 'Rp ' . number_format((float) $row->total_harga, 0, ',', '.'),
                     'keterangan' => $row->keterangan,
                 ];
@@ -302,34 +336,60 @@ class ReportController extends Controller
 
     protected function stockInboundRows(Carbon $startDate, Carbon $endDate): array
     {
-        $columns = ['no', 'nama_barang', 'qty', 'tanggal'];
+        $columns = ['no', 'nama_barang', 'qty', 'satuan', 'tanggal'];
 
         if (! $this->hasTable('stock_inbounds')) {
             return [collect(), $columns];
         }
 
         $hasItemName = $this->hasColumn('stock_inbounds', 'item_name');
+        $hasUnit = $this->hasColumn('stock_inbounds', 'unit');
         $hasCreatedAt = $this->hasColumn('stock_inbounds', 'created_at');
+        $canFallbackToStockUnit = $this->hasTable('stocks')
+            && $hasItemName
+            && $this->hasColumn('stocks', 'item_name')
+            && $this->hasColumn('stocks', 'unit');
 
-        $rows = DB::table('stock_inbounds')
+        $unitSql = match (true) {
+            $hasUnit && $canFallbackToStockUnit => 'COALESCE(stock_inbounds.unit, stock_units.unit, "-")',
+            $hasUnit => 'COALESCE(stock_inbounds.unit, "-")',
+            $canFallbackToStockUnit => 'COALESCE(stock_units.unit, "-")',
+            default => "'-'",
+        };
+
+        $query = DB::table('stock_inbounds')
             ->select(
-                DB::raw(($hasItemName ? 'COALESCE(item_name, "-")' : "'-'") . ' as item_name'),
-                DB::raw('COALESCE(qty, 0) as qty'),
-                DB::raw($hasCreatedAt ? 'created_at' : 'NULL as created_at')
-            )
+                DB::raw(($hasItemName ? 'COALESCE(stock_inbounds.item_name, "-")' : "'-'") . ' as item_name'),
+                DB::raw('COALESCE(stock_inbounds.qty, 0) as qty'),
+                DB::raw($unitSql . ' as satuan'),
+                DB::raw($hasCreatedAt ? 'stock_inbounds.created_at' : 'NULL as created_at')
+            );
+
+        if ($canFallbackToStockUnit) {
+            $stockUnits = DB::table('stocks')
+                ->select('item_name', DB::raw('MAX(unit) as unit'))
+                ->groupBy('item_name');
+
+            $query->leftJoinSub($stockUnits, 'stock_units', function ($join) {
+                $join->on('stock_units.item_name', '=', 'stock_inbounds.item_name');
+            });
+        }
+
+        $rows = $query
             ->when($hasCreatedAt, function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('created_at', [
+                $query->whereBetween('stock_inbounds.created_at', [
                     $startDate->copy()->startOfDay()->toDateTimeString(),
                     $endDate->copy()->endOfDay()->toDateTimeString(),
                 ]);
             })
-            ->orderByDesc($hasCreatedAt ? 'created_at' : 'id')
+            ->orderByDesc($hasCreatedAt ? 'stock_inbounds.created_at' : 'stock_inbounds.id')
             ->get()
             ->map(function ($row, $index) {
                 return [
                     'no' => $index + 1,
                     'nama_barang' => $row->item_name,
                     'qty' => $row->qty,
+                    'satuan' => $row->satuan,
                     'tanggal' => $row->created_at
                         ? Carbon::parse($row->created_at)->format('d-m-Y')
                         : '-',

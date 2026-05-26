@@ -75,6 +75,15 @@ class StockController extends Controller
             });
     }
 
+    protected function applyItemCodeOrdering($query)
+    {
+        return $query
+            ->orderByRaw("CASE WHEN item_code IS NULL OR item_code = '' THEN 1 ELSE 0 END")
+            ->orderBy('item_code')
+            ->orderBy('item_name')
+            ->orderBy('id');
+    }
+
     public function index()
     {
         if (! $this->stockColumnsReady()) {
@@ -83,11 +92,10 @@ class StockController extends Controller
 
         $search = trim((string) request()->query('search'));
 
-        $stocks = $this->stockQuery()
+        $stocks = $this->applyItemCodeOrdering($this->stockQuery()
             ->when($search !== '', function ($query) use ($search) {
                 $query->where('item_name', 'like', '%' . $search . '%');
-            })
-            ->orderByDesc('id')
+            }))
             ->simplePaginate(10)
             ->withQueryString();
 
@@ -137,12 +145,18 @@ class StockController extends Controller
 
         $stock = Stock::findOrFail($validated['stock_id']);
 
-        DB::table('stock_inbounds')->insert([
+        $payload = [
             'item_name' => $stock->item_name,
             'qty' => $validated['qty'],
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ];
+
+        if (Schema::hasColumn('stock_inbounds', 'unit')) {
+            $payload['unit'] = $stock->unit;
+        }
+
+        DB::table('stock_inbounds')->insert($payload);
 
         $stock->increment('qty', $validated['qty']);
 

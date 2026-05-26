@@ -124,7 +124,7 @@ class AppServiceProvider extends ServiceProvider
                                 'title' => 'Approval PO Manager Operasional',
                                 'message' => 'PO ' . $approval->purchaseOrder?->po_number . ' menunggu dibuka.',
                                 'route' => route('purchase-orders.show', $approval->purchaseOrder),
-                                'time' => optional($approval->purchaseOrder?->transaction_date)->format('d-m-Y'),
+                                'time' => optional($approval->purchaseOrder?->created_at)->format('d-m-Y H:i') ?? optional($approval->purchaseOrder?->transaction_date)->format('d-m-Y'),
                             ];
                         });
 
@@ -150,7 +150,7 @@ class AppServiceProvider extends ServiceProvider
                             'title' => 'Approval PO Direktur Operasional',
                             'message' => 'PO ' . $approval->purchaseOrder?->po_number . ' menunggu dibuka.',
                             'route' => route('purchase-orders.show', $approval->purchaseOrder),
-                            'time' => optional($approval->purchaseOrder?->transaction_date)->format('d-m-Y'),
+                            'time' => optional($approval->purchaseOrder?->created_at)->format('d-m-Y H:i') ?? optional($approval->purchaseOrder?->transaction_date)->format('d-m-Y'),
                         ];
                     });
 

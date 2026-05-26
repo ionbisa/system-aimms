@@ -445,7 +445,7 @@ class ItemRequestController extends Controller
             ->get();
 
         $filename = 'laporan-permintaan-barang-' . $selectedMonth->format('Y-m') . '-' . now()->format('His') . '.csv';
-        $columns = ['No', 'No Permintaan', 'Tanggal', 'Divisi', 'Dibuat Oleh', 'Status Approval', 'Tahap Proses', 'Status Realisasi', 'Total Item', 'Ringkasan Barang', 'Distribusi Selesai'];
+        $columns = ['No', 'No Permintaan', 'Tanggal & Waktu', 'Divisi', 'Dibuat Oleh', 'Status Approval', 'Tahap Proses', 'Status Realisasi', 'Total Item', 'Ringkasan Barang', 'Distribusi Selesai'];
 
         return response()->streamDownload(function () use ($rows, $columns) {
             $handle = fopen('php://output', 'w');

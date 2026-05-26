@@ -107,7 +107,7 @@
                 <tr class="text-center">
                     <th>No</th>
                     <th>No Permintaan</th>
-                    <th>Tanggal</th>
+                    <th>Tanggal & Waktu</th>
                     <th>Divisi</th>
                     <th>Dibuat Oleh</th>
                     <th>Ringkasan Barang</th>

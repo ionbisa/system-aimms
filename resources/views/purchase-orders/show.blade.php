@@ -43,7 +43,7 @@
                         </div>
                         <div class="col-md-6">
                             <small class="text-muted d-block">Tanggal dan Waktu</small>
-                            <strong>{{ optional($purchaseOrder->transaction_date)->format('d-m-Y') }}</strong>
+                            <strong>{{ optional($purchaseOrder->created_at)->format('d-m-Y H:i:s') ?? optional($purchaseOrder->transaction_date)->format('d-m-Y') }}</strong>
                         </div>
                         <div class="col-md-6">
                             <small class="text-muted d-block">No PO</small>

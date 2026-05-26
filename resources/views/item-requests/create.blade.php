@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Tanggal dan Waktu</label>
-                        <input type="text" class="form-control" value="{{ now()->format('d-m-Y H:i') }} (otomatis saat submit)" readonly>
+                        <input type="text" class="form-control js-live-datetime" value="{{ now()->format('d-m-Y H:i:s') }} WIB (otomatis saat submit)" readonly>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Divisi</label>
@@ -146,9 +146,33 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const liveDateTimeInput = document.querySelector('.js-live-datetime');
         const tableBody = document.querySelector('#itemRequestItemsTable tbody');
         const addRowButton = document.getElementById('addItemRow');
         const stockOptions = @json($stockOptions);
+
+        const syncLiveDateTime = () => {
+            if (!liveDateTimeInput) {
+                return;
+            }
+
+            const formatter = new Intl.DateTimeFormat('id-ID', {
+                timeZone: 'Asia/Jakarta',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            });
+            const parts = Object.fromEntries(formatter.formatToParts(new Date()).map((part) => [part.type, part.value]));
+
+            liveDateTimeInput.value = `${parts.day}-${parts.month}-${parts.year} ${parts.hour}:${parts.minute}:${parts.second} WIB (otomatis saat submit)`;
+        };
+
+        syncLiveDateTime();
+        setInterval(syncLiveDateTime, 1000);
 
         const escapeHtml = (value) => String(value ?? '')
             .replace(/&/g, '&amp;')
