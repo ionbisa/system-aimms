@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Asset;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -178,7 +181,10 @@ class ReportController extends Controller
             ? 'COALESCE(actual_total_price, total_price, 0)'
             : 'COALESCE(total_price, 0)';
 
-        $baseRows = DB::table('purchase_orders')
+        /** @var QueryBuilder $purchaseOrders */
+        $purchaseOrders = DB::table('purchase_orders');
+
+        $baseRows = $purchaseOrders
             ->select(
                 'purchase_orders.id',
                 'po_number',
@@ -202,14 +208,19 @@ class ReportController extends Controller
                 ")
             )
             ->whereBetween(DB::raw($hasTransactionDate ? 'COALESCE(transaction_date, DATE(created_at))' : 'DATE(created_at)'), [$startDate->toDateString(), $endDate->toDateString()])
-            ->when($division !== '' && $hasDivision, fn ($query) => $query->where('division', $division))
-            ->orderByDesc(DB::raw($hasTransactionDate ? 'COALESCE(transaction_date, created_at)' : 'created_at'))
+            ->when($division !== '' && $hasDivision, function (QueryBuilder $query) use ($division) {
+                return $query->where('division', $division);
+            })
+            ->orderBy('po_number')
             ->get();
 
         $itemsByPurchaseOrder = collect();
 
         if ($hasPurchaseOrderItems && $baseRows->isNotEmpty()) {
-            $itemsByPurchaseOrder = DB::table('purchase_order_items')
+            /** @var QueryBuilder $purchaseOrderItems */
+            $purchaseOrderItems = DB::table('purchase_order_items');
+
+            $itemsByPurchaseOrder = $purchaseOrderItems
                 ->select('purchase_order_id', 'qty', 'unit', 'estimated_unit_price')
                 ->whereIn('purchase_order_id', $baseRows->pluck('id')->all())
                 ->orderBy('line_number')
@@ -357,6 +368,7 @@ class ReportController extends Controller
             default => "'-'",
         };
 
+        /** @var QueryBuilder $query */
         $query = DB::table('stock_inbounds')
             ->select(
                 DB::raw(($hasItemName ? 'COALESCE(stock_inbounds.item_name, "-")' : "'-'") . ' as item_name'),
@@ -370,14 +382,14 @@ class ReportController extends Controller
                 ->select('item_name', DB::raw('MAX(unit) as unit'))
                 ->groupBy('item_name');
 
-            $query->leftJoinSub($stockUnits, 'stock_units', function ($join) {
-                $join->on('stock_units.item_name', '=', 'stock_inbounds.item_name');
+            $query->leftJoinSub($stockUnits, 'stock_units', function (JoinClause $join) {
+                return $join->on('stock_units.item_name', '=', 'stock_inbounds.item_name');
             });
         }
 
         $rows = $query
-            ->when($hasCreatedAt, function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('stock_inbounds.created_at', [
+            ->when($hasCreatedAt, function (QueryBuilder $query) use ($startDate, $endDate) {
+                return $query->whereBetween('stock_inbounds.created_at', [
                     $startDate->copy()->startOfDay()->toDateTimeString(),
                     $endDate->copy()->endOfDay()->toDateTimeString(),
                 ]);
@@ -412,6 +424,7 @@ class ReportController extends Controller
         $hasItemName = $this->hasColumn('stock_outbounds', 'item_name');
         $hasCreatedAt = $this->hasColumn('stock_outbounds', 'created_at');
 
+        /** @var QueryBuilder $query */
         $rows = DB::table('stock_outbounds')
             ->select(
                 DB::raw(($hasItemName ? 'COALESCE(item_name, "-")' : "'-'") . ' as item_name'),
@@ -420,8 +433,8 @@ class ReportController extends Controller
                 DB::raw(($hasDescription ? 'COALESCE(description, "-")' : "'-'") . ' as keterangan'),
                 DB::raw($hasCreatedAt ? 'created_at' : 'NULL as created_at')
             )
-            ->when($hasCreatedAt, function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('created_at', [
+            ->when($hasCreatedAt, function (QueryBuilder $query) use ($startDate, $endDate) {
+                return $query->whereBetween('created_at', [
                     $startDate->copy()->startOfDay()->toDateTimeString(),
                     $endDate->copy()->endOfDay()->toDateTimeString(),
                 ]);
@@ -459,7 +472,10 @@ class ReportController extends Controller
         $hasLocation = $this->hasColumn('assets', 'location');
         $hasStatus = $this->hasColumn('assets', 'status');
 
-        $rows = Asset::query()
+        /** @var Builder $assetQuery */
+        $assetQuery = Asset::query();
+
+        $rows = $assetQuery
             ->whereIn('type', $types)
             ->orderBy('name')
             ->orderBy('location')
@@ -498,7 +514,10 @@ class ReportController extends Controller
             return [collect(), $columns];
         }
 
-        $assets = Asset::query()
+        /** @var Builder $assetsQuery */
+        $assetsQuery = Asset::query();
+
+        $assets = $assetsQuery
             ->whereIn('type', ['Office Assets', 'Office'])
             ->orderBy('name')
             ->orderBy('location')

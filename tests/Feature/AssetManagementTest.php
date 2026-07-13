@@ -338,6 +338,83 @@ class AssetManagementTest extends TestCase
         $this->assertStringContainsString('Rp 50.000', $exportContent);
     }
 
+    public function test_purchase_order_report_is_sorted_by_po_number(): void
+    {
+        $user = User::factory()->create();
+
+        DB::table('purchase_orders')->insert([
+            [
+                'po_number' => '011/BBP/GA/V/2026',
+                'transaction_date' => '2026-05-03',
+                'transaction_type' => 'Pembelian Barang',
+                'division' => 'GA',
+                'category' => 'Operasional',
+                'description' => 'Pembelian servis',
+                'vendor' => 'Vendor A',
+                'qty' => 1,
+                'unit' => 'Unit',
+                'unit_price' => 100000,
+                'total_price' => 100000,
+                'status' => 'Approved',
+                'status_label' => 'Approved',
+                'created_at' => '2026-05-03 08:00:00',
+                'updated_at' => '2026-05-03 08:00:00',
+            ],
+            [
+                'po_number' => '002/BBP/GA/V/2026',
+                'transaction_date' => '2026-05-01',
+                'transaction_type' => 'Pembelian Barang',
+                'division' => 'GA',
+                'category' => 'Operasional',
+                'description' => 'Pembelian alat',
+                'vendor' => 'Vendor B',
+                'qty' => 1,
+                'unit' => 'Unit',
+                'unit_price' => 200000,
+                'total_price' => 200000,
+                'status' => 'Approved',
+                'status_label' => 'Approved',
+                'created_at' => '2026-05-01 08:00:00',
+                'updated_at' => '2026-05-01 08:00:00',
+            ],
+            [
+                'po_number' => '005/BBP/GA/V/2026',
+                'transaction_date' => '2026-05-02',
+                'transaction_type' => 'Pembelian Barang',
+                'division' => 'GA',
+                'category' => 'Operasional',
+                'description' => 'Pembelian bahan',
+                'vendor' => 'Vendor C',
+                'qty' => 1,
+                'unit' => 'Unit',
+                'unit_price' => 150000,
+                'total_price' => 150000,
+                'status' => 'Approved',
+                'status_label' => 'Approved',
+                'created_at' => '2026-05-02 08:00:00',
+                'updated_at' => '2026-05-02 08:00:00',
+            ],
+        ]);
+
+        $reportParameters = [
+            'type' => 'purchase_orders',
+            'start_date' => '2026-05-01',
+            'end_date' => '2026-05-03',
+        ];
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('reports.daily', $reportParameters));
+
+        $response
+            ->assertOk()
+            ->assertSeeTextInOrder([
+                '002/BBP/GA/V/2026',
+                '005/BBP/GA/V/2026',
+                '011/BBP/GA/V/2026',
+            ]);
+    }
+
     public function test_stock_inbound_report_filters_by_selected_period(): void
     {
         $user = User::factory()->create();
