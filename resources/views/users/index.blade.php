@@ -75,7 +75,7 @@
                         <div class="d-flex align-items-center gap-2">
                             @if($user->profile_photo_path)
                             <img
-                                src="{{ url('media/' . ltrim($user->profile_photo_path, '/')) }}"
+                                src="{{ \App\Support\PublicMedia::url($user->profile_photo_path) }}"
                                 alt="{{ $user->name }}"
                                 class="rounded-circle border"
                                 width="42"

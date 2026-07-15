@@ -68,6 +68,17 @@ class PublicMedia
         return self::findFile($path) !== null;
     }
 
+    public static function url(?string $path): ?string
+    {
+        $normalizedPath = self::normalizePath($path);
+
+        if (! $normalizedPath) {
+            return null;
+        }
+
+        return '/storage/' . ltrim($normalizedPath, '/');
+    }
+
     /**
      * Shared-hosting deployments sometimes expose storage from public_html
      * instead of Laravel's public directory. Keep lookup strict to public media.

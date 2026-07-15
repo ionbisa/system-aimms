@@ -109,7 +109,7 @@
                     <td class="text-center">
                         @if($employeeBoot->photo)
                         <img
-                            src="{{ url('media/' . ltrim($employeeBoot->photo, '/')) }}"
+                            src="{{ \App\Support\PublicMedia::url($employeeBoot->photo) }}"
                             alt="{{ $employeeBoot->employee_name }}"
                             width="60"
                             class="rounded"
@@ -146,7 +146,7 @@
                             </div>
                             <div class="modal-body">
                                 @if($employeeBoot->photo)
-                                <img src="{{ url('media/' . ltrim($employeeBoot->photo, '/')) }}" alt="{{ $employeeBoot->employee_name }}" class="img-fluid rounded mb-3">
+                                <img src="{{ \App\Support\PublicMedia::url($employeeBoot->photo) }}" alt="{{ $employeeBoot->employee_name }}" class="img-fluid rounded mb-3">
                                 @endif
 
                                 <div class="row g-3">

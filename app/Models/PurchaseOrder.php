@@ -154,13 +154,7 @@ class PurchaseOrder extends Model
 
     public function getReceiptFileUrlAttribute(): ?string
     {
-        $path = PublicMedia::normalizePath($this->receipt_file ?: $this->photo);
-
-        if (! $path || ! PublicMedia::exists($path)) {
-            return null;
-        }
-
-        return route('media.show', ['path' => $path]);
+        return PublicMedia::url($this->receipt_file ?: $this->photo);
     }
 
     public function getReceiptFileIsImageAttribute(): bool

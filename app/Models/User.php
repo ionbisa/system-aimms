@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PublicMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -33,10 +34,6 @@ class User extends Authenticatable
 
     public function getProfilePhotoUrlAttribute(): ?string
     {
-        if (! $this->profile_photo_path) {
-            return null;
-        }
-
-        return url('/media/' . ltrim($this->profile_photo_path, '/'));
+        return PublicMedia::url($this->profile_photo_path);
     }
 }

@@ -73,7 +73,7 @@
                     <td class="text-center">
                         @if($stock->photo)
                         <img
-                            src="{{ url('media/' . ltrim($stock->photo, '/')) }}"
+                            src="{{ \App\Support\PublicMedia::url($stock->photo) }}"
                             alt="{{ $stock->item_name }}"
                             width="60"
                             class="rounded"
@@ -126,7 +126,7 @@
                             </div>
                             <div class="modal-body">
                                 @if($stock->photo)
-                                <img src="{{ url('media/' . ltrim($stock->photo, '/')) }}" alt="{{ $stock->item_name }}" class="img-fluid rounded mb-3">
+                                <img src="{{ \App\Support\PublicMedia::url($stock->photo) }}" alt="{{ $stock->item_name }}" class="img-fluid rounded mb-3">
                                 @endif
 
                                 <div class="row g-3">

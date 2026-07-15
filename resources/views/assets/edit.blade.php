@@ -80,7 +80,7 @@
 
         @if($asset->photo)
         <div class="col-12">
-            <img src="{{ url('media/' . ltrim($asset->photo, '/')) }}" alt="{{ $asset->name }}" class="img-thumbnail" style="max-height: 180px;">
+            <img src="{{ \App\Support\PublicMedia::url($asset->photo) }}" alt="{{ $asset->name }}" class="img-thumbnail" style="max-height: 180px;">
         </div>
         @endif
 
