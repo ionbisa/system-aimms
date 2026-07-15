@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    /** @var \Illuminate\Support\MessageBag $errors */
+@endphp
+
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
