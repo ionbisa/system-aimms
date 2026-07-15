@@ -2,6 +2,7 @@
 
 @php
     /** @var \App\Models\User|null $authUser */
+    /** @var \Illuminate\Support\MessageBag $errors */
     $authUser = \Illuminate\Support\Facades\Auth::user();
     $tableColumnCount = $authUser?->hasAnyRole(['Master Admin', 'Admin GA']) ? 14 : 13;
 @endphp
