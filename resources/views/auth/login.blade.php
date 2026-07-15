@@ -50,17 +50,17 @@
                 </h4>
             </div>
 
-            <form method="POST" action="{{ route('login') }}" data-skip-loader>
+            <form method="POST" action="{{ route('login') }}" data-skip-loader autocomplete="off">
                 @csrf
 
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}" class="form-control" required autofocus>
+                    <input type="email" name="email" value="{{ old('email') }}" class="form-control" required autofocus autocomplete="email">
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" required>
+                    <input type="password" name="password" class="form-control" required autocomplete="current-password">
                 </div>
 
                 <button class="btn btn-primary w-100">
