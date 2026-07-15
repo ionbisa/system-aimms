@@ -1,1 +1,7 @@
-.gitkeep
+*
+!.gitignore
+!*.jpg
+!*.jpeg
+!*.png
+!*.gif
+!*.webp
